@@ -5,7 +5,7 @@
 	<BlendEffect>BLEND_EFFECT_ALPHABLND</BlendEffect>
 	<flatPlacement>false</flatPlacement>
 	<lazyLoad>false</lazyLoad>
-	<textureItem href="ScrollSliderNormal.(UITextureElement).xdb#xpointer(/UITextureElement)" />
+	<textureItem href="ScrollSliderBtnNormal.(UITextureElement).xdb#xpointer(/UITextureElement)" />
 	<textureMask href="" />
 	<Scaling>true</Scaling>
 </WidgetLayerSimpleTexture>

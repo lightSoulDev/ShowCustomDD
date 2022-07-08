@@ -5,10 +5,13 @@
 	<Priority>200</Priority>
 	<Placement>
 		<X>
-			<Align>WIDGET_ALIGN_BOTH</Align>
+			<Align>WIDGET_ALIGN_LOW</Align>
+			<Pos>6</Pos>
+			<Size>50</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_BOTH</Align>
+			<Pos>1</Pos>
 		</Y>
 	</Placement>
 	<TransparentInput>true</TransparentInput>

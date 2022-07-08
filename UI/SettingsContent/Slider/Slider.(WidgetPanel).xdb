@@ -8,7 +8,8 @@
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_BOTH</Align>
-			<Pos>6</Pos>
+			<Pos>61</Pos>
+			<HighPos>1</HighPos>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_BOTH</Align>

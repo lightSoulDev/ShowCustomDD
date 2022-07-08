@@ -2,13 +2,15 @@
 <WidgetDiscreteSlider>
 	<Name>slider_slider</Name>
 	<Priority>1</Priority>
-	<BackLayer href="" />
+	<BackLayer href="../Common/ContentFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_BOTH</Align>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_BOTH</Align>
+			<Pos>5</Pos>
+			<HighPos>5</HighPos>
 		</Y>
 	</Placement>
 	<Visible>true</Visible>
@@ -19,4 +21,5 @@
 	<moveArrangement>WIDGETS_ARRANGEMENT_L2R</moveArrangement>
 	<reactionChanged>slider_changed</reactionChanged>
 	<stepsCount>255</stepsCount>
+	<clipContent>false</clipContent>
 </WidgetDiscreteSlider>

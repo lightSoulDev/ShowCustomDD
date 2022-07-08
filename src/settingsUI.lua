@@ -129,6 +129,20 @@ function UI.createList(name, label, options, default)
     return temp
 end
 
+function UI.createSlider(name, label, options, default)
+    local temp = { name = name, label = label, type = "List", params = {
+        options = options,
+    }}
+
+    -- if (default == nil) then default = 1 end
+
+    -- temp.params.value = options[default]
+    -- temp.params.defaultValue = options[default]
+    -- temp.params.index = default
+
+    return temp
+end
+
 function UI.addGroup(name, label, settings)
 	local scrollCont = mainForm:GetChildChecked("SettingsMain", false):GetChildChecked("OptionsContainer", true)
     local minPosY = 16

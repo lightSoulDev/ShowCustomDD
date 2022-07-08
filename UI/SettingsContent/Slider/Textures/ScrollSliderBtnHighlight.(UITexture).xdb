@@ -3,19 +3,19 @@
 	<mipSW>-1</mipSW>
 	<mipsNumber>1</mipsNumber>
 	<generateMipChain>false</generateMipChain>
-	<type>DXT5</type>
+	<type>DXT1</type>
 	<width>64</width>
-	<height>64</height>
-	<realWidth>64</realWidth>
-	<realHeight>64</realHeight>
+	<height>32</height>
+	<realWidth>36</realWidth>
+	<realHeight>24</realHeight>
 	<disableLODControl>false</disableLODControl>
 	<alphaTex>true</alphaTex>
-	<binaryFileSize>944</binaryFileSize>
-	<binaryFile href="ScrollSliderNormal.(UITexture).bin" />
+	<binaryFileSize>330</binaryFileSize>
+	<binaryFile href="ScrollSliderBtnHighlight.(UITexture).bin" />
 	<binaryFileSize2>0</binaryFileSize2>
 	<binaryFile2 href="" />
-	<sourceFile href="ScrollSliderNormal.tga" />
-	<sourceFileCRC>-1208905696</sourceFileCRC>
+	<sourceFile href="ScrollSliderBtnHighlight.tga" />
+	<sourceFileCRC>-1036388816</sourceFileCRC>
 	<wrap>false</wrap>
 	<LocalizationInfo />
 	<atlasPart>true</atlasPart>

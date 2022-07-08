@@ -6,13 +6,13 @@
 		<Item href="Slider.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SliderPanelBarText.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 	</Children>
-	<BackLayer href="../Common/ContentFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+	<BackLayer href="" />
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_HIGH</Align>
 			<Pos>0</Pos>
 			<HighPos>28</HighPos>
-			<Size>187</Size>
+			<Size>273</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_CENTER</Align>

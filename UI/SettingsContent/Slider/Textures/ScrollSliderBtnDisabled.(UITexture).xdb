@@ -5,17 +5,17 @@
 	<generateMipChain>false</generateMipChain>
 	<type>DXT5</type>
 	<width>64</width>
-	<height>64</height>
-	<realWidth>64</realWidth>
-	<realHeight>64</realHeight>
+	<height>32</height>
+	<realWidth>36</realWidth>
+	<realHeight>24</realHeight>
 	<disableLODControl>false</disableLODControl>
 	<alphaTex>true</alphaTex>
-	<binaryFileSize>901</binaryFileSize>
-	<binaryFile href="ScrollSliderPressed.(UITexture).bin" />
+	<binaryFileSize>510</binaryFileSize>
+	<binaryFile href="ScrollSliderBtnDisabled.(UITexture).bin" />
 	<binaryFileSize2>0</binaryFileSize2>
 	<binaryFile2 href="" />
-	<sourceFile href="ScrollSliderPressed.tga" />
-	<sourceFileCRC>-1267067660</sourceFileCRC>
+	<sourceFile href="ScrollSliderBtnDisabled.tga" />
+	<sourceFileCRC>1638251149</sourceFileCRC>
 	<wrap>false</wrap>
 	<LocalizationInfo />
 	<atlasPart>true</atlasPart>

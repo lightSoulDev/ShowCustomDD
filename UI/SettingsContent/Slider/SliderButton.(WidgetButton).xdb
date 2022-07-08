@@ -3,12 +3,12 @@
 	<Name>SliderButton</Name>
 	<Placement>
 		<X>
-			<Size>32</Size>
+			<Size>36</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_CENTER</Align>
-			<Size>32</Size>
-			<Pos>3</Pos>
+			<Size>24</Size>
+			<Pos>0</Pos>
 		</Y>
 	</Placement>
 	<Visible>true</Visible>
@@ -17,13 +17,13 @@
 		<Item>
 			<LayerHighlight href="../Common/ScrollButtonHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<StateNormal>
-				<LayerMain href="Textures/ScrollSliderNormal.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+				<LayerMain href="Textures/ScrollSliderBtnNormal.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
 			<StatePushed>
-				<LayerMain href="Textures/ScrollSliderPressed.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+				<LayerMain href="Textures/ScrollSliderBtnPressed.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StatePushed>
 			<StateDisabled>
-				<LayerMain href="Textures/ScrollSliderDisabled.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+				<LayerMain href="Textures/ScrollSliderBtnDisabled.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateDisabled>
 		</Item>
 	</Variants>
