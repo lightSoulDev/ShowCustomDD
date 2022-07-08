@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetPanel>
-	<Name>CastBar</Name>
+	<Name>PlateBg</Name>
 	<Priority>1</Priority>
-	<BackLayer href="Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<BackLayer href="../Common/Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Placement>
 		<QuantumScale>false</QuantumScale>
 		<X>
-			<Align>WIDGET_ALIGN_CENTER</Align>
+			<Align>WIDGET_ALIGN_LOW</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
-			<Size>300</Size>
+			<Size>0</Size>
 		</X>
 		<Y>
-			<Align>WIDGET_ALIGN_CENTER</Align>
+			<Align>WIDGET_ALIGN_LOW</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
-			<Size>40</Size>
+			<Size>0</Size>
 		</Y>
 	</Placement>
 	<Visible>false</Visible>

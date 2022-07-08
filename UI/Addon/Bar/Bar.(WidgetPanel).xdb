@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetPanel>
-	<Name>Setting</Name>
+	<Name>Bar</Name>
 	<Priority>1</Priority>
-	<BackLayer href="Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<BackLayer href="../Common/Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Placement>
 		<QuantumScale>false</QuantumScale>
 		<X>
 			<Align>WIDGET_ALIGN_CENTER</Align>
-			<Size>0</Size>
+			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
+			<Size>300</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_CENTER</Align>
-			<Size>0</Size>
+			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
+			<Size>40</Size>
 		</Y>
 	</Placement>
 	<Visible>false</Visible>

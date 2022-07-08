@@ -2,7 +2,7 @@
 <WidgetPanel>
 	<Name>IconSpell</Name>
 	<Priority>3</Priority>
-	<BackLayer href="Placeholder.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<BackLayer href="../Common/Placeholder.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Placement>
 		<QuantumScale>false</QuantumScale>
 		<X>

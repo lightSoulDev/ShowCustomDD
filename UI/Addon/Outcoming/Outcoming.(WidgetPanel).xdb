@@ -2,7 +2,7 @@
 <WidgetPanel>
 	<Name>Outcoming</Name>
 	<Priority>1</Priority>
-	<BackLayer href="Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+	<BackLayer href="../Common/Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Children>
 		<Item href="IconSpell.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 	</Children>
