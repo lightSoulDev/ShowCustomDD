@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetPanel>
-	<Name>ListPanelDesc</Name>
+	<Name>InputPanelBg</Name>
 	<Priority>100</Priority>
 	<Children>
-		<Item href="ListPanelDescText.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
+		<Item href="EditLine.(WidgetEditLine).xdb#xpointer(/WidgetEditLine)" />
 	</Children>
-	<BackLayer href="Textures/ContentFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+	<BackLayer href="../Common/ContentFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_HIGH</Align>
 			<Pos>0</Pos>
-			<HighPos>53</HighPos>
-			<Size>187</Size>
+			<HighPos>28</HighPos>
+			<Size>56</Size>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_CENTER</Align>

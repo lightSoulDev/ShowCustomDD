@@ -6,7 +6,7 @@
 		<Item href="InputPanelText.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 		<Item href="InputPanelBg.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 	</Children>
-	<BackLayer href="Textures/OptionTiledFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
+	<BackLayer href="../Common/OptionTiledFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 	<Placement>
 		<X>
 			<Align>WIDGET_ALIGN_BOTH</Align>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetButton>
 	<Header>
-		<Prototype href="CheckBoxes/CheckBoxStone.Prototype.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Prototype href="CheckBoxStone.Prototype.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	</Header>
 	<Name>Checkbox</Name>
 	<Priority>0</Priority>
@@ -35,18 +35,18 @@
 	<TextTag>text</TextTag>
 	<Variants>
 		<Item>
-			<LayerHighlight href="CheckBoxes/CheckBoxStoneHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+			<LayerHighlight href="Textures/CheckBoxStoneHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<StateNormal>
-				<LayerMain href="CheckBoxes/CheckBoxStone.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+				<LayerMain href="Textures/CheckBoxStone.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
 			<Reaction>checkbox_pressed</Reaction>
 			<ReactionOnUp>true</ReactionOnUp>
 			<ReactionOnPointing>checkbox_over</ReactionOnPointing>
 		</Item>
 		<Item>
-			<LayerHighlight href="CheckBoxes/CheckBoxStoneHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+			<LayerHighlight href="Textures/CheckBoxStoneHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<StateNormal>
-				<LayerMain href="CheckBoxes/CheckBoxStoneChecked.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+				<LayerMain href="Textures/CheckBoxStoneChecked.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
 			<Reaction>checkbox_pressed</Reaction>
 			<ReactionOnUp>true</ReactionOnUp>
