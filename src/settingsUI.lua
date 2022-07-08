@@ -83,12 +83,24 @@ function onInputFocus(params)
     end
 end
 
+function onSliderChange(params)
+    -- for k,v in pairs(params) do 
+        -- PushToChatSimple(tostring(k).." = "..tostring(v))
+    -- end
+
+    local descPanel = params.widget:GetParent():GetParent()
+    local label = descPanel:GetChildChecked("SliderPanelBarText", true)
+    local value = params.widget:GetPos()
+
+    label:SetVal("text", tostring(value))
+end
+
 function UI.init()
     common.RegisterReactionHandler(onCB, "checkbox_pressed")
     common.RegisterReactionHandler(onListBtn, "list_leftbutton_pressed")
     common.RegisterReactionHandler(onListBtn, "list_rightbutton_pressed")
     common.RegisterReactionHandler(onInputFocus, "RenameFocusChanged")
-
+    common.RegisterReactionHandler(onSliderChange, "slider_changed")
 
 end
 
@@ -169,6 +181,10 @@ function UI.addGroup(name, label, settings)
     local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (3-1)*45, highPosX = 0, alignY = 0 })
     background:AddChild(inputPanel)
     inputPanel:GetChildChecked("InputPanelText", false):SetVal("list_text", "test")
+
+    local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (4-1)*45, highPosX = 0, alignY = 0 })
+    background:AddChild(sliderPanel)
+    sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", "test")
 
     printSettings()
 

@@ -15,7 +15,7 @@
 	<IgnoreDblClick>true</IgnoreDblClick>
 	<Variants>
 		<Item>
-			<LayerHighlight href="Textures/ScrollButtonHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
+			<LayerHighlight href="../Common/ScrollButtonHighlight.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			<StateNormal>
 				<LayerMain href="Textures/LeftButtonNormal.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
