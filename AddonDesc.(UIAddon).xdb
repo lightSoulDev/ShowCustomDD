@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UIAddon>
+	<Name>ShowDD_Fetish</Name>
+	<AutoStart>true</AutoStart>
+	<ScriptFileRefs>
+		<Item href="src/LibDnD.lua"/>
+		<Item href="settings.lua"/>
+		<Item href="src/settingsUI.lua"/>
+		<Item href="src/mainscript.lua"/>
+	</ScriptFileRefs>
+	<MainFormId>Main</MainFormId>
+	<Forms>
+		<Item>
+			<Id>Main</Id>
+			<Form href="UI/MainForm.(WidgetForm).xdb"/>
+		</Item>
+	</Forms>
+<addon_name>ShowDD_Fetish</addon_name>
+<localizedNameFileRef href="info/name.txt"/>
+<localizedDescFileRef href="info/desc.txt"/>
+<texturesGroups>
+	<Item>
+		<groupName>RELATED_TEXTURES</groupName>
+		<textures href="RelatedTextures.(UIRelatedTextures).xdb#xpointer(/UIRelatedTextures)"/>
+	</Item>
+</texturesGroups>
+</UIAddon>
