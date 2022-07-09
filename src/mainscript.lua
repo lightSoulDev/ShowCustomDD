@@ -528,7 +528,11 @@ function setUpTemplates()
 		UI.createCheckBox("shorten", "Сокращать цифры урона", true),
 		UI.createList("maxBars", "Количество панелей", {
 			2, 3, 4, 5, 6, 7, 8, 9, 10
-		}, 1)
+		}, 1),
+		UI.createSlider("redColor", "Пример слайдера", {
+			stepsCount = 255,
+			width = 212,
+		}, 0)
 	})
 end
 

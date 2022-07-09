@@ -84,15 +84,16 @@ function onInputFocus(params)
 end
 
 function onSliderChange(params)
-    -- for k,v in pairs(params) do 
-        -- PushToChatSimple(tostring(k).." = "..tostring(v))
-    -- end
+    if (params.sender and UI_SETTINGS[params.sender]) then
+        local descPanel = params.widget:GetParent():GetParent()
+        local label = descPanel:GetChildChecked("SliderPanelBarText", true)
+        local value = params.widget:GetPos()
+        label:SetVal("text", tostring(value))
 
-    local descPanel = params.widget:GetParent():GetParent()
-    local label = descPanel:GetChildChecked("SliderPanelBarText", true)
-    local value = params.widget:GetPos()
+        UI_SETTINGS[params.sender].value = value
+    end
 
-    label:SetVal("text", tostring(value))
+    printSettings()
 end
 
 function UI.init()
@@ -120,7 +121,8 @@ function UI.createList(name, label, options, default)
         options = options,
     }}
 
-    if (default == nil) then default = 1 end
+    if (default == nil or default < 1) then default = 1 end
+    if (default > #options) then default = #options end
 
     temp.params.value = options[default]
     temp.params.defaultValue = options[default]
@@ -130,15 +132,18 @@ function UI.createList(name, label, options, default)
 end
 
 function UI.createSlider(name, label, options, default)
-    local temp = { name = name, label = label, type = "List", params = {
-        options = options,
+    local temp = { name = name, label = label, type = "Slider", params = {
+        options = {
+            stepsCount = options.stepsCount or 10,
+            width = options.width or 212
+        },
     }}
 
-    -- if (default == nil) then default = 1 end
+    if (default == nil) then default = 0 end
+    if (default > options.stepsCount) then default = options.stepsCount end
 
-    -- temp.params.value = options[default]
-    -- temp.params.defaultValue = options[default]
-    -- temp.params.index = default
+    temp.params.value = default
+    temp.params.defaultValue = default
 
     return temp
 end
@@ -187,18 +192,33 @@ function UI.addGroup(name, label, settings)
                     UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, index = v.params.index, options = v.params.options, widgets = {
                         lBtn = lBtn, rBtn = rBtn, value = listPanel:GetChildChecked("ListPanelDescText", true)
                     }}
+                elseif (v.type == "Slider") then
+                    local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    background:AddChild(sliderPanel)
+                    sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", v.label)
+
+                    local discreteSlider = sliderPanel:GetChildChecked("DiscreteSlider", true)
+                    local barPanel = sliderPanel:GetChildChecked("SliderPanelBar", true)
+                    local valueLabel = barPanel:GetChildChecked("SliderPanelBarText", true)
+
+                    wtSetPlace(barPanel, { sizeX = (v.params.options.width + 61) })
+                    discreteSlider:SetStepsCount(v.params.options.stepsCount)
+                    discreteSlider:SetPos(v.params.value)
+                    discreteSlider:SetName(id)
+                    valueLabel:SetVal("text", tostring(v.params.value))
+                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
                 end
             end
         end
     end
 
-    local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (3-1)*45, highPosX = 0, alignY = 0 })
-    background:AddChild(inputPanel)
-    inputPanel:GetChildChecked("InputPanelText", false):SetVal("list_text", "test")
+    -- local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (#settings)*45, highPosX = 0, alignY = 0 })
+    -- background:AddChild(inputPanel)
+    -- inputPanel:GetChildChecked("InputPanelText", false):SetVal("list_text", "test")
 
-    local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (4-1)*45, highPosX = 0, alignY = 0 })
-    background:AddChild(sliderPanel)
-    sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", "test")
+    -- local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (#settings + 1)*45, highPosX = 0, alignY = 0 })
+    -- background:AddChild(sliderPanel)
+    -- sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", "test")
 
     printSettings()
 

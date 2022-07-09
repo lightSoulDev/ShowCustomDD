@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetDiscreteSlider>
-	<Name>slider_slider</Name>
+	<Name>DiscreteSlider</Name>
 	<Priority>1</Priority>
 	<BackLayer href="../Common/ContentFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 	<Placement>
