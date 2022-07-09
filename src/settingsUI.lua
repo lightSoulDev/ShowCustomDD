@@ -77,9 +77,41 @@ function onCB(params)
     end
 end
 
-function onInputFocus(params)
-    for k,v in pairs(params) do 
-        PushToChatSimple(tostring(k).." = "..tostring(v))
+function extractFloatFromString(s)
+    local parts = {}
+
+    for w in s:gmatch("%d[%d.,]*") do table.insert(parts, w) end
+    local result = ""
+    for k, v in pairs(parts) do
+        result = result..tostring(v)
+    end
+
+    return tonumber(result) or 0
+end
+
+function onInputChange(params)
+    -- for k,v in pairs(params) do 
+    --     PushToChatSimple(tostring(k).." = "..tostring(v))
+    -- end
+
+    if (params.sender and UI_SETTINGS[params.sender]) then
+        local tempVal = params.widget:GetString()
+
+        if (UI_SETTINGS[params.sender].filter == "_NUM") then
+            tempVal = tostring(extractFloatFromString(tempVal))
+            params.widget:SetText(toWS(tempVal))
+        end
+
+        UI_SETTINGS[params.sender].value = tempVal
+        params.widget:SetFocus(false)
+    end
+
+    printSettings()
+end
+
+function onInputEsc(params)
+    if (params.widget) then
+        params.widget:SetFocus(false)
     end
 end
 
@@ -100,9 +132,9 @@ function UI.init()
     common.RegisterReactionHandler(onCB, "checkbox_pressed")
     common.RegisterReactionHandler(onListBtn, "list_leftbutton_pressed")
     common.RegisterReactionHandler(onListBtn, "list_rightbutton_pressed")
-    common.RegisterReactionHandler(onInputFocus, "RenameFocusChanged")
+    common.RegisterReactionHandler(onInputChange, "RenameBuildReaction")
+    common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
     common.RegisterReactionHandler(onSliderChange, "slider_changed")
-
 end
 
 function UI.createCheckBox(name, label, default)
@@ -141,6 +173,24 @@ function UI.createSlider(name, label, options, default)
 
     if (default == nil) then default = 0 end
     if (default > options.stepsCount) then default = options.stepsCount end
+
+    temp.params.value = default
+    temp.params.defaultValue = default
+
+    return temp
+end
+
+function UI.createInput(name, label, options, default)
+    local temp = { name = name, label = label, type = "Input", params = {
+        options = {
+            isPassword = options.isPassword or false,
+            maxChars = options.maxChars or nil,
+            width = options.width or (options.maxChars and options.maxChars * 12 + 10) or 100,
+            filter = options.filter or ""
+        },
+    }}
+
+    if (default == nil) then default = "" end
 
     temp.params.value = default
     temp.params.defaultValue = default
@@ -207,18 +257,26 @@ function UI.addGroup(name, label, settings)
                     discreteSlider:SetName(id)
                     valueLabel:SetVal("text", tostring(v.params.value))
                     UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+                elseif (v.type == "Input") then
+                    local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    background:AddChild(inputPanel)
+                    inputPanel:GetChildChecked("InputPanelText", false):SetVal("text", v.label)
+
+                    local inputBg = inputPanel:GetChildChecked("InputPanelBg", true)
+                    wtSetPlace(inputBg, { sizeX = (v.params.options.width) })
+                    local editLine = inputPanel:GetChildChecked("EditLine"..v.params.options.filter, true)
+                    editLine:SetMaxSize( v.params.options.maxChars )
+                    editLine:SetMaxSize( v.params.options.maxChars )
+                    editLine:SetText( toWS( v.params.value ) )
+                    editLine:Show(true)
+                    editLine:Enable(true)
+                    editLine:SetName(id)
+
+                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, filter = v.params.options.filter}
                 end
             end
         end
     end
-
-    -- local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (#settings)*45, highPosX = 0, alignY = 0 })
-    -- background:AddChild(inputPanel)
-    -- inputPanel:GetChildChecked("InputPanelText", false):SetVal("list_text", "test")
-
-    -- local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (#settings + 1)*45, highPosX = 0, alignY = 0 })
-    -- background:AddChild(sliderPanel)
-    -- sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", "test")
 
     printSettings()
 

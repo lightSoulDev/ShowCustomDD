@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetEditLine>
-	<Name>EditLine</Text>
+	<Name>EditLine_NUM</Text>
 	<Priority>200</Priority>
 	<Placement>
 		<QuantumScale>false</QuantumScale>
@@ -44,4 +44,5 @@
 	</TextStyle>
 	<isPassword>false</isPassword>
 	<maxSymbolsCount>-1</maxSymbolsCount>
+	<filterAlias/>
 </WidgetEditLine>

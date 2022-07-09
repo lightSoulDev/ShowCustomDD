@@ -529,6 +529,17 @@ function setUpTemplates()
 		UI.createList("maxBars", "Количество панелей", {
 			2, 3, 4, 5, 6, 7, 8, 9, 10
 		}, 1),
+		UI.createInput("testInput", "Пример инпута" , {
+			maxChars = 10,
+		}, 'test'),
+		UI.createInput("testInput", "Пример инпута NUM" , {
+			maxChars = 10,
+			filter = "_NUM"
+		}, 'test'),
+		UI.createInput("testInput2", "Пример инпута INT" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '100'),
 		UI.createSlider("redColor", "Пример слайдера", {
 			stepsCount = 255,
 			width = 212,
