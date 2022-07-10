@@ -1,6 +1,10 @@
 Global( "UI", {} )
 Global( "UI_SETTINGS", {} )
 
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-- =-                  U T I L S                  -=
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 function toWS( arg )
 	return userMods.ToWString(arg)
 end
@@ -31,17 +35,39 @@ function chVariant(value)
     return 0
 end
 
+function len(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
+end
+
+function extractFloatFromString(s)
+    local parts = {}
+
+    for w in s:gmatch("%d[%d.,]*") do table.insert(parts, w) end
+    local result = ""
+    for k, v in pairs(parts) do
+        result = result..tostring(v)
+    end
+
+    return tonumber(result) or 0
+end
+
 function printSettings()
     for k,v in pairs(UI_SETTINGS) do
         PushToChatSimple("|___ "..(k).." = "..tostring(v.value))
     end 
 end
 
-function onListBtn(params)
-    -- for k,v in pairs(params) do 
-    --     PushToChatSimple(tostring(k).." = "..tostring(v))
-    -- end
+function saveSettings()
+    userMods.SetGlobalConfigSection("UI_SETTINGS", UI_SETTINGS)
+end
 
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-- =- S E T T I N G S   C H A N G E   E V E N T S -=
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+function onListBtn(params)
     if params.active then
         local settings = UI_SETTINGS[params.sender]
         if (params.sender and settings) then
@@ -61,9 +87,9 @@ function onListBtn(params)
 
             UI_SETTINGS[params.sender].value = settings.options[index]
             UI_SETTINGS[params.sender].index = index
-        end
 
-        printSettings()
+            saveSettings()
+        end
     end
 end
 
@@ -71,28 +97,13 @@ function onCB(params)
     if params.active then
         if (params.sender and UI_SETTINGS[params.sender]) then
             UI_SETTINGS[params.sender].value = not UI_SETTINGS[params.sender].value 
-            params.widget:SetVariant( chVariant(UI_SETTINGS[params.sender].value) )
+            params.widget:SetVariant(chVariant(UI_SETTINGS[params.sender].value))
+            saveSettings()
         end
-        printSettings()
     end
-end
-
-function extractFloatFromString(s)
-    local parts = {}
-
-    for w in s:gmatch("%d[%d.,]*") do table.insert(parts, w) end
-    local result = ""
-    for k, v in pairs(parts) do
-        result = result..tostring(v)
-    end
-
-    return tonumber(result) or 0
 end
 
 function onInputChange(params)
-    -- for k,v in pairs(params) do 
-    --     PushToChatSimple(tostring(k).." = "..tostring(v))
-    -- end
 
     if (params.sender and UI_SETTINGS[params.sender]) then
         local tempVal = params.widget:GetString()
@@ -104,9 +115,9 @@ function onInputChange(params)
 
         UI_SETTINGS[params.sender].value = tempVal
         params.widget:SetFocus(false)
-    end
 
-    printSettings()
+        saveSettings()
+    end
 end
 
 function onInputEsc(params)
@@ -123,10 +134,13 @@ function onSliderChange(params)
         label:SetVal("text", tostring(value))
 
         UI_SETTINGS[params.sender].value = value
+        saveSettings()
     end
-
-    printSettings()
 end
+
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-- =-                   I N I T                   -=
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 function UI.init()
     common.RegisterReactionHandler(onCB, "checkbox_pressed")
@@ -135,7 +149,22 @@ function UI.init()
     common.RegisterReactionHandler(onInputChange, "RenameBuildReaction")
     common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
     common.RegisterReactionHandler(onSliderChange, "slider_changed")
+
+    local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
+    if (config and len(config) > 0) then UI_SETTINGS = config end
 end
+
+function UI.save()
+    saveSettings()
+end
+
+function UI.print()
+    printSettings()
+end
+
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-- =-          U I   G E N E R A T O R S          -=
+-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 function UI.createCheckBox(name, label, default)
     local temp = { name = name, label = label, type = "Checkbox", params = {}}
@@ -223,25 +252,33 @@ function UI.addGroup(name, label, settings)
                     checkboxPanel:GetChildChecked("CheckboxPanelText", false):SetVal("checkbox_text", v.label)
                     background:AddChild(checkboxPanel)
                     
-                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
-                    checkboxBtn:SetVariant( chVariant(v.params.value) )
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+                    end
+                    checkboxBtn:SetVariant(chVariant(UI_SETTINGS[id].value))
+
                 elseif (v.type == "List") then
                     local listPanel = CreateWG("ListPanel", "ListPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
                     background:AddChild(listPanel)
                     listPanel:GetChildChecked("ListPanelText", false):SetVal("list_text", v.label)
-                    listPanel:GetChildChecked("ListPanelDescText", true):SetVal("list_desctext", tostring(v.params.value))
 
                     local lBtn = listPanel:GetChildChecked("ListPanelButtonLeft", true)
                     local rBtn = listPanel:GetChildChecked("ListPanelButtonRight", true)
-
-                    lBtn:Enable(v.params.index > 1)
                     lBtn:SetName(id)
-                    rBtn:Enable(v.params.index < #(v.params.options))
                     rBtn:SetName(id)
 
-                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, index = v.params.index, options = v.params.options, widgets = {
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, index = v.params.index, options = v.params.options }
+                    end
+
+                    listPanel:GetChildChecked("ListPanelDescText", true):SetVal("list_desctext", tostring(UI_SETTINGS[id].value))
+                    lBtn:Enable(UI_SETTINGS[id].index > 1)
+                    rBtn:Enable(UI_SETTINGS[id].index < #(UI_SETTINGS[id].options))
+
+                    UI_SETTINGS[id].widgets = {
                         lBtn = lBtn, rBtn = rBtn, value = listPanel:GetChildChecked("ListPanelDescText", true)
-                    }}
+                    }
+
                 elseif (v.type == "Slider") then
                     local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
                     background:AddChild(sliderPanel)
@@ -253,10 +290,15 @@ function UI.addGroup(name, label, settings)
 
                     wtSetPlace(barPanel, { sizeX = (v.params.options.width + 61) })
                     discreteSlider:SetStepsCount(v.params.options.stepsCount)
-                    discreteSlider:SetPos(v.params.value)
                     discreteSlider:SetName(id)
-                    valueLabel:SetVal("text", tostring(v.params.value))
-                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+                    end 
+
+                    discreteSlider:SetPos(UI_SETTINGS[id].value)
+                    valueLabel:SetVal("text", tostring(UI_SETTINGS[id].value))
+
                 elseif (v.type == "Input") then
                     local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
                     background:AddChild(inputPanel)
@@ -267,12 +309,15 @@ function UI.addGroup(name, label, settings)
                     local editLine = inputPanel:GetChildChecked("EditLine"..v.params.options.filter, true)
                     editLine:SetMaxSize( v.params.options.maxChars )
                     editLine:SetMaxSize( v.params.options.maxChars )
-                    editLine:SetText( toWS( v.params.value ) )
                     editLine:Show(true)
                     editLine:Enable(true)
                     editLine:SetName(id)
 
-                    UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, filter = v.params.options.filter}
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, filter = v.params.options.filter}
+                    end
+
+                    editLine:SetText(toWS(UI_SETTINGS[id].value))
                 end
             end
         end

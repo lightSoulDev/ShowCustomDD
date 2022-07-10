@@ -423,6 +423,8 @@ function onSlash(p)
 
 	if (split_string[1]:lower() == "/ddtest" and split_string[2]) then
 		pushToStack({}, split_string[2])
+	elseif(split_string[1]:lower() == "/ddsettings") then
+		UI.print()
 	end
 end
 
@@ -532,11 +534,11 @@ function setUpTemplates()
 		UI.createInput("testInput", "Пример инпута" , {
 			maxChars = 10,
 		}, 'test'),
-		UI.createInput("testInput", "Пример инпута NUM" , {
+		UI.createInput("testInput2", "Пример инпута NUM" , {
 			maxChars = 10,
 			filter = "_NUM"
 		}, 'test'),
-		UI.createInput("testInput2", "Пример инпута INT" , {
+		UI.createInput("testInput3", "Пример инпута INT" , {
 			maxChars = 10,
 			filter = "_INT"
 		}, '100'),
