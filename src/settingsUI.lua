@@ -3,7 +3,9 @@ Global( "UI_SETTINGS", {} )
 Global( "SETTING_GROUPS", {} )
 Global( "SETTING_GROUPS_KEYS_ORDER", {} )
 Global( "PANEL_WIDGETS", {} )
+Global( "TABS", {} )
 
+local CURRENT_TAB = nil
 local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
 
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -123,7 +125,6 @@ function onMainRestore()
     -- UI_SETTINGS = {}
 
     for k, v in pairs(UI_SETTINGS) do
-        pushToChatSimple(k)
         if (v and v.type) then
             if (v.type == "Checkbox" or v.type == "Slider" or v.type == "Input") then
                 UI_SETTINGS[k].value = v.defaultValue
@@ -140,6 +141,27 @@ function onMainRestore()
     UI.render()
 end
 
+function onTabSwitch(params)
+    -- for k, v in pairs(params) do
+    --     pushToChatSimple("|___ "..(k).." = "..tostring(v))
+    -- end
+    if (not params.sender) then return end
+    local split_string = {}
+    for w in params.sender:gmatch('([^_]+)') do table.insert(split_string, w) end
+
+    if (split_string[2]) then
+        for i, t in pairs(TABS) do
+            if (t.widget) then
+                t.widget:SetVariant(0)
+            end
+        end
+
+        CURRENT_TAB = split_string[2]
+        params.widget:SetVariant(1)
+        UI.render()
+    end
+end
+
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- =-                   I N I T                   -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -154,6 +176,7 @@ function UI.init(name)
     common.RegisterReactionHandler(onSettingButton, "setting_button_pressed")
     common.RegisterReactionHandler(onMainAccept, "main_accept_pressed")
     common.RegisterReactionHandler(onMainRestore, "main_restore_pressed")
+    common.RegisterReactionHandler(onTabSwitch, "tab_pressed")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -284,6 +307,31 @@ function UI.removeGroup(name)
     table.remove(SETTING_GROUPS_KEYS_ORDER, name)
 end
 
+function UI.setTabs(tabs, default)
+    TABS = tabs
+    CURRENT_TAB = default
+
+    local settingsPanel = mainForm:GetChildChecked("SettingsMain", true)
+    local tabTemplate = settingsPanel:GetChildChecked("TabTemplate", false)
+    local i = 0
+    for k, v in pairs(tabs) do
+        local label = v.label
+        local tab = CreateWG("TabTemplate", "Tab_"..label, settingsPanel, true,
+        { posX = i * 120 + 35})
+
+        tab:Show(true)
+        tab:Enable(true)
+        tab:SetVal("tab_label", toWS(label))
+        tab:SetVariant(0)
+        if (label == default) then tab:SetVariant(1) end
+        i = i + 1
+
+        TABS[k].widget = tab
+    end
+
+    i = nil
+end
+
 function UI.render()
 
     local scrollCont = mainForm:GetChildChecked("OptionsContainer", true)
@@ -297,7 +345,10 @@ function UI.render()
         local group_name = _key
         local group = SETTING_GROUPS[_key]
         if (not group) then return end
+        local TAB_SHOW = true
 
+        if (TABS and not tabContainsGroup(TABS, CURRENT_TAB, group_name)) then TAB_SHOW = false end
+        
         local settings = group.settings
         local grouplabel = group.label
         local frameH = ((#settings) * 45) + 30
@@ -438,8 +489,9 @@ function UI.render()
             end
         end
 
-        printSettings()
-        scrollCont:PushBack( groupFrame )
+        -- printSettings()
+        if (TAB_SHOW) then scrollCont:PushBack( groupFrame )
+        else groupFrame:Show(false) end
     end
 end
 

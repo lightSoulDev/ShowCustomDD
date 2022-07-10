@@ -578,6 +578,29 @@ function setUpTemplates()
 		}, 0),
 	})
 
+	UI.setTabs({
+		{
+			label = "Common",
+			groups = {
+				"PanelSettings",
+				"Formatting"
+			}
+		},
+		{
+			label = "Filtering",
+			groups = {
+				"DamageFilteringP",
+				"DamageFilteringU"
+			}
+		},
+		{
+			label = "Backlayer",
+			groups = {
+				"PanelBackground",
+			}
+		}
+	}, "Common")
+
 	UI.render()
 end
 

@@ -356,6 +356,16 @@ function contains(array, value)
 	return false
 end
 
+function tabContainsGroup(tabs, tab, group)
+	for i, t in pairs(tabs) do
+		if (t and t.label == tab) then
+			return contains(t.groups, group)
+		end
+	end
+
+	return false
+end
+
 function classListAll(canBeNil)
 	local tmp = {}
 	if (canBeNil) then table.insert(tmp, "-") end

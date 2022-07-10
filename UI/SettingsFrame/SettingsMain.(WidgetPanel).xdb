@@ -11,6 +11,8 @@
 
         <Item href="Buttons/ButtonRestore.(WidgetButton).xdb#xpointer(/WidgetButton)" />
         <Item href="Buttons/ButtonAccept.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+
+        <Item href="Tabs/Tab.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	</Children>
 	<Placement>
 		<QuantumScale>false</QuantumScale>
