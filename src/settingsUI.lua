@@ -104,6 +104,24 @@ function onSettingButton(params)
     end
 end
 
+function onMainAccept()
+    saveSettings()
+    UI.toggle()
+end
+
+function onMainRestore()
+    -- saveSettings()
+
+    -- for k, v in pairs(UI_SETTINGS) do
+    --     pushToChatSimple(k)
+    --     if (v and v.type) then
+    --         if (v.type == "Checkbox") then
+    --             UI_SETTINGS[k].value = v.defaultValue
+    --         end
+    --     end
+    -- end
+end
+
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- =-                   I N I T                   -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -116,6 +134,10 @@ function UI.init(name)
     common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
     common.RegisterReactionHandler(onSliderChange, "slider_changed")
     common.RegisterReactionHandler(onSettingButton, "setting_button_pressed")
+
+    common.RegisterReactionHandler(onMainAccept, "main_accept_pressed")
+    common.RegisterReactionHandler(onMainRestore, "main_restore_pressed")
+
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -171,7 +193,7 @@ function UI.createList(name, label, options, default)
     if (default > #options) then default = #options end
 
     temp.params.value = options[default]
-    temp.params.defaultValue = options[default]
+    temp.params.defaultIndex = default
     temp.params.index = default
 
     return temp
@@ -226,7 +248,7 @@ function UI.createButton(name, label, options, default)
     if (default > #(options.states)) then default = #(options.states) end
 
     temp.params.value = options.states[default]
-    temp.params.defaultValue = options.states[default]
+    temp.params.defaultState = default
     temp.params.state = default
 
     return temp
@@ -258,7 +280,7 @@ function UI.addGroup(name, label, settings)
                     background:AddChild(checkboxPanel)
                     
                     if (not UI_SETTINGS[id]) then
-                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultValue = v.params.defaultValue }
                     end
                     checkboxBtn:SetVariant(chVariant(UI_SETTINGS[id].value))
                 elseif (v.type == "Button") then
@@ -272,8 +294,9 @@ function UI.addGroup(name, label, settings)
 
                     if (not UI_SETTINGS[id]) then
                         UI_SETTINGS[id] = {
+                            type = v.type, 
                             value = v.params.value,
-                            defaultValue = v.params.defaultValue,
+                            defaultState = v.params.defaultState,
                             callback = v.params.callback,
                             states = v.params.states,
                             state = v.params.state
@@ -294,7 +317,7 @@ function UI.addGroup(name, label, settings)
                     rBtn:SetName(id)
 
                     if (not UI_SETTINGS[id]) then
-                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, index = v.params.index, options = v.params.options }
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultIndex = v.params.defaultIndex, index = v.params.index, options = v.params.options }
                     end
 
                     listPanel:GetChildChecked("ListPanelDescText", true):SetVal("list_desctext", tostring(UI_SETTINGS[id].value))
@@ -319,7 +342,7 @@ function UI.addGroup(name, label, settings)
                     discreteSlider:SetName(id)
 
                     if (not UI_SETTINGS[id]) then
-                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultValue = v.params.defaultValue }
                     end 
 
                     discreteSlider:SetPos(UI_SETTINGS[id].value)
@@ -340,7 +363,7 @@ function UI.addGroup(name, label, settings)
                     editLine:SetName(id)
 
                     if (not UI_SETTINGS[id]) then
-                        UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue, filter = v.params.options.filter}
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultValue = v.params.defaultValue, filter = v.params.options.filter}
                     end
 
                     editLine:SetText(toWS(UI_SETTINGS[id].value))
