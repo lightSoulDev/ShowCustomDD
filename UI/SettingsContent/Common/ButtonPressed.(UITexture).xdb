@@ -10,12 +10,12 @@
 	<realHeight>30</realHeight>
 	<disableLODControl>false</disableLODControl>
 	<alphaTex>true</alphaTex>
-	<binaryFileSize>732</binaryFileSize>
-	<binaryFile href="SortButtonNormal.(UITexture).bin" />
+	<binaryFileSize>578</binaryFileSize>
+	<binaryFile href="ButtonPressed.(UITexture).bin" />
 	<binaryFileSize2>0</binaryFileSize2>
 	<binaryFile2 href="" />
-	<sourceFile href="SortButtonNormal.tga" />
-	<sourceFileCRC>632710057</sourceFileCRC>
+	<sourceFile href="ButtonPressed.tga" />
+	<sourceFileCRC>-906872638</sourceFileCRC>
 	<wrap>false</wrap>
 	<LocalizationInfo />
 	<atlasPart>true</atlasPart>

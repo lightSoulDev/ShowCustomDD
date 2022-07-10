@@ -494,8 +494,35 @@ function setUpTemplates()
 		UI.createSlider("redColor", "Пример слайдера", {
 			stepsCount = 255,
 			width = 212,
-		}, 0)
+		}, 0),
+		UI.createButton("testButton", "Пример кнопки", {
+			width = 128,
+			states = {
+				'Стейт 1',
+				'Стейт 2',
+				'Стейт 3',
+			},
+			callback = switchButtonState
+		}, 2)
 	})
+end
+
+function switchButtonState(widget, settings)
+	local prevState = settings.state
+	local newState = prevState
+
+	if (prevState == #(settings.states)) then
+		newState = 1
+	else
+		newState = newState + 1
+	end
+
+	settings.state = newState
+	settings.value = settings.states[newState]
+	widget:SetVal("label", toWS(settings.value))
+
+	UI.save()
+	UI.print()
 end
 
 if (avatar.IsExist()) then Init()

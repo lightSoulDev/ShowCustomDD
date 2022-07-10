@@ -93,6 +93,17 @@ function onSliderChange(params)
     end
 end
 
+function onSettingButton(params)
+    pushToChatSimple(params.sender)
+
+    if (params.sender and UI_SETTINGS[params.sender]) then
+        local cb = UI_SETTINGS[params.sender].callback
+        if (cb and type(cb) == "function") then
+            cb(params.widget, UI_SETTINGS[params.sender])
+        end
+    end
+end
+
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- =-                   I N I T                   -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -104,6 +115,7 @@ function UI.init(name)
     common.RegisterReactionHandler(onInputChange, "RenameBuildReaction")
     common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
     common.RegisterReactionHandler(onSliderChange, "slider_changed")
+    common.RegisterReactionHandler(onSettingButton, "setting_button_pressed")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -200,6 +212,26 @@ function UI.createInput(name, label, options, default)
     return temp
 end
 
+function UI.createButton(name, label, options, default)
+
+    local temp = { name = name, label = label, btnLabel = btnLabel, type = "Button", params = {
+        callback = options.callback,
+        states = options.states,
+        options = {
+            width = options.width or 100,
+        },
+    }}
+
+    if (default == nil or default < 1) then default = 1 end
+    if (default > #(options.states)) then default = #(options.states) end
+
+    temp.params.value = options.states[default]
+    temp.params.defaultValue = options.states[default]
+    temp.params.state = default
+
+    return temp
+end
+
 function UI.addGroup(name, label, settings)
 	local scrollCont = mainForm:GetChildChecked("SettingsMain", false):GetChildChecked("OptionsContainer", true)
     local minPosY = 16
@@ -229,6 +261,27 @@ function UI.addGroup(name, label, settings)
                         UI_SETTINGS[id] = { value = v.params.value, defaultValue = v.params.defaultValue }
                     end
                     checkboxBtn:SetVariant(chVariant(UI_SETTINGS[id].value))
+                elseif (v.type == "Button") then
+                    local buttonPanel = CreateWG("ButtonPanel", "ButtonPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    background:AddChild(buttonPanel)
+                    buttonPanel:GetChildChecked("ButtonPanelText", false):SetVal("text", v.label)
+
+                    local button = buttonPanel:GetChildChecked("Button", true)
+                    button:SetName(id)
+                    wtSetPlace(button, { sizeX = v.params.options.width })
+
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = {
+                            value = v.params.value,
+                            defaultValue = v.params.defaultValue,
+                            callback = v.params.callback,
+                            states = v.params.states,
+                            state = v.params.state
+                        }
+                    end
+
+                    button:SetVal("label", toWS(UI_SETTINGS[id].value))
+                    UI_SETTINGS[id].callback = v.params.callback
 
                 elseif (v.type == "List") then
                     local listPanel = CreateWG("ListPanel", "ListPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
