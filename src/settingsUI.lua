@@ -1,61 +1,15 @@
 Global( "UI", {} )
 Global( "UI_SETTINGS", {} )
 
+local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
+
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- =-                  U T I L S                  -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-function toWS( arg )
-	return userMods.ToWString(arg)
-end
-
-function fromWS( arg )
-	return userMods.FromWString(arg)
-end
-function PushToChat(message,size,color)
-	local fsize = size or 18
-	local textFormat = string.format('<header color="0x%s" fontsize="%s" outline="1" shadow="1"><rs class="class">%s</rs></header>',color, tostring(fsize),message)
-	local VT = common.CreateValuedText()
-	VT:SetFormat(toWS(textFormat))
-	local chatContainer = stateMainForm:GetChildUnchecked("ChatLog", false):GetChildUnchecked("Area", false):GetChildUnchecked("Panel02",false):GetChildUnchecked("Container", false)
-	chatContainer:PushFrontValuedText(VT)
-end
-
-function PushToChatSimple(message)
-	local textFormat = string.format("<html fontsize='16'><rs class='class'>%s</rs></html>",message)
-	local VT = common.CreateValuedText()
-	VT:SetFormat(toWS(textFormat))
-	VT:SetClassVal("class", "LogColorWhite")
-	local chatContainer = stateMainForm:GetChildUnchecked("ChatLog", false):GetChildUnchecked("Area", false):GetChildUnchecked("Panel02",false):GetChildUnchecked("Container", false)
-	chatContainer:PushFrontValuedText(VT)
-end
-
-function chVariant(value)
-    if (value) then return 1 end
-    return 0
-end
-
-function len(T)
-	local count = 0
-	for _ in pairs(T) do count = count + 1 end
-	return count
-end
-
-function extractFloatFromString(s)
-    local parts = {}
-
-    for w in s:gmatch("%d[%d.,]*") do table.insert(parts, w) end
-    local result = ""
-    for k, v in pairs(parts) do
-        result = result..tostring(v)
-    end
-
-    return tonumber(result) or 0
-end
-
 function printSettings()
     for k,v in pairs(UI_SETTINGS) do
-        PushToChatSimple("|___ "..(k).." = "..tostring(v.value))
+        pushToChatSimple("|___ "..(k).." = "..tostring(v.value))
     end 
 end
 
@@ -104,7 +58,6 @@ function onCB(params)
 end
 
 function onInputChange(params)
-
     if (params.sender and UI_SETTINGS[params.sender]) then
         local tempVal = params.widget:GetString()
 
@@ -122,6 +75,8 @@ end
 
 function onInputEsc(params)
     if (params.widget) then
+        onInputChange(params)
+
         params.widget:SetFocus(false)
     end
 end
@@ -142,7 +97,7 @@ end
 -- =-                   I N I T                   -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-function UI.init()
+function UI.init(name)
     common.RegisterReactionHandler(onCB, "checkbox_pressed")
     common.RegisterReactionHandler(onListBtn, "list_leftbutton_pressed")
     common.RegisterReactionHandler(onListBtn, "list_rightbutton_pressed")
@@ -152,6 +107,14 @@ function UI.init()
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
+
+    local frameHeader = SettingsMainFrame:GetChildChecked("WindowHeader", true)
+    if (not name) then name = "Settings" end
+    frameHeader:GetChildChecked("HeaderText", true):SetVal("header", name)
+
+    frameHeader:SetTransparentInput(false)
+    DnD.Init(SettingsMainFrame, frameHeader)
+    DnD.Enable(SettingsMainFrame, false)
 end
 
 function UI.save()
@@ -160,6 +123,16 @@ end
 
 function UI.print()
     printSettings()
+end
+
+function UI.dnd(value)
+    DnD.Enable(SettingsMainFrame, value)
+end
+
+function UI.toggle()
+    local ui = mainForm:GetChildChecked("SettingsMain", false)
+	ui:Show(not ui:IsVisibleEx())
+	wtSetPlace(ui, {alignX=2, alignY=2})
 end
 
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

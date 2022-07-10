@@ -1,65 +1,14 @@
 local out_template = mainForm:GetChildChecked("Outcoming", true)
 local inc_template = mainForm:GetChildChecked("Incoming", true)
-
 local counter = 0
-
 local TEMPLATE = {
 	['out'] = out_template,
 	['inc'] = inc_template
 }
-
 local STACK = {
 	['out'] = {},
 	['inc'] = {}
 }
-
-function len(T)
-	local count = 0
-	for _ in pairs(T) do count = count + 1 end
-	return count
-end
-
-function toWS( arg )
-	return userMods.ToWString(arg)
-end
-
-function fromWS( arg )
-	return userMods.FromWString(arg)
-end
-function PushToChat(message,size,color)
-	local fsize = size or 18
-	local textFormat = string.format('<header color="0x%s" fontsize="%s" outline="1" shadow="1"><rs class="class">%s</rs></header>',color, tostring(fsize),message)
-	local VT = common.CreateValuedText()
-	VT:SetFormat(toWS(textFormat))
-	local chatContainer = stateMainForm:GetChildUnchecked("ChatLog", false):GetChildUnchecked("Area", false):GetChildUnchecked("Panel02",false):GetChildUnchecked("Container", false)
-	chatContainer:PushFrontValuedText(VT)
-end
-
-function PushToChatSimple(message)
-	local textFormat = string.format("<html fontsize='16'><rs class='class'>%s</rs></html>",message)
-	local VT = common.CreateValuedText()
-	VT:SetFormat(toWS(textFormat))
-	VT:SetClassVal("class", "LogColorWhite")
-	local chatContainer = stateMainForm:GetChildUnchecked("ChatLog", false):GetChildUnchecked("Area", false):GetChildUnchecked("Panel02",false):GetChildUnchecked("Container", false)
-	chatContainer:PushFrontValuedText(VT)
-end
-
-function wtSetPlace(w, place )
-	local p = w:GetPlacementPlain()
-	for k, v in pairs(place) do	
-		p[k] = place[k] or v
-	end
-	w:SetPlacementPlain(p)
-end
-
-function CreateWG(desc, name, parent, show, place)
-	local n = mainForm:CreateWidgetByDesc( mainForm:GetChildChecked( desc, true ):GetWidgetDesc() )
-	if name then n:SetName( name ) end
-	if parent then parent:AddChild(n) end
-	if place then wtSetPlace( n, place ) end
-	n:Show( show == true )
-	return n
-end
 
 function onPlayEffectFinished(e)
 	if e.wtOwner then
@@ -121,7 +70,7 @@ function getTexture(name)
 end
 
 function onUnitHeal(e)
-	-- PushToChatSimple("onUnitHeal: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitHeal: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.healerId,
@@ -215,7 +164,7 @@ function onUnitHeal(e)
 end
 
 function onUnitDamage(e)
-	-- PushToChatSimple("onUnitDamage: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitDamage: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.source,
@@ -294,9 +243,9 @@ function onUnitDamage(e)
 			params.icon = getTexture("FALL")
 			params.name = "Падение"
 		end
-		if (e.isExploit) then PushToChatSimple("DamageFromExploit") end
+		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
 
-		-- PushToChatSimple(e.damageSource)
+		-- pushToChatSimple(e.damageSource)
 
 		if (e.damageSource) then
 			if (e.damageSource == "DamageSource_BARRIER") then
@@ -438,6 +387,8 @@ function ToggleDnd()
 	DnD.Enable(inc_template, dndEnabled)
 	inc_template:Show(dndEnabled)
 	inc_template:SetTransparentInput( not dndEnabled )
+
+	UI.dnd(dndEnabled)
 end
 
 function onCfgLeft()
@@ -445,9 +396,7 @@ function onCfgLeft()
 		return
 	end
 
-	local test = mainForm:GetChildChecked("SettingsMain", false)
-	test:Show(not test:IsVisibleEx())
-	wtSetPlace(test, {alignX=2, alignY=2})
+	UI.toggle()
 end
 
 function onCfgRight()
@@ -459,7 +408,7 @@ function onCfgRight()
 end
 
 function Init()
-	UI.init()
+	UI.init("ShowDD")
 	common.RegisterEventHandler(onUnitDamage, 'EVENT_UNIT_DAMAGE_RECEIVED')
 	common.RegisterEventHandler(onUnitHeal, 'EVENT_HEALING_RECEIVED')
 

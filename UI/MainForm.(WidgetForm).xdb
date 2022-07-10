@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetForm>
 	<Name>ShowDD_Fetish</Name>
-	<Priority>5000</Priority>
+	<Priority>10000</Priority>
 	<Children>
 		<Item href="SettingsContent/Checkbox/CheckboxPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/List/ListPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
