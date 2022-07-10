@@ -30,17 +30,20 @@ function onListBtn(params)
         if (params.sender and settings) then
             local index = settings.index
 
-            if (params.name == "list_leftbutton_pressed" and index > 1) then
+            if (params.name == "list_leftbutton_pressed") then
                 index = index - 1
-            elseif (index < #(settings.options)) then
-                index = index + 1
+                if (not settings.cycle and index < 1) then return end
+                if (index < 1) then index = #(settings.options) end
             else
-                return
+                index = index + 1
+                if (not settings.cycle and index > #(settings.options)) then return end
+
+                if (index > #(settings.options)) then index = 1 end
             end
 
             settings.widgets.value:SetVal("text", tostring(settings.options[index]))
-            settings.widgets.lBtn:Enable(index > 1)
-            settings.widgets.rBtn:Enable(index < #(settings.options))
+            settings.widgets.lBtn:Enable(settings.cycle or index > 1)
+            settings.widgets.rBtn:Enable(settings.cycle or index < #(settings.options))
 
             local tmp = tostring(settings.options[index])
             UI_SETTINGS[params.sender].value = tmp
@@ -197,7 +200,7 @@ function UI.createCheckBox(name, label, default)
     return temp
 end
 
-function UI.createList(name, label, options, default)
+function UI.createList(name, label, options, default, cycle)
     local temp = { name = name, label = label, type = "List", params = {
         options = options,
     }}
@@ -208,6 +211,7 @@ function UI.createList(name, label, options, default)
     temp.params.value = options[default]
     temp.params.defaultIndex = default
     temp.params.index = default
+    temp.params.cycle = cycle
 
     return temp
 end
@@ -367,7 +371,7 @@ function UI.render()
                     rBtn:SetName(id)
 
                     if (not UI_SETTINGS[id]) then
-                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultIndex = v.params.defaultIndex, index = v.params.index, options = v.params.options }
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultIndex = v.params.defaultIndex, index = v.params.index, options = v.params.options, cycle = v.params.cycle }
                     end
 
                     local tmp = tostring(UI_SETTINGS[id].value)
@@ -379,8 +383,8 @@ function UI.render()
                         valueLabel:SetClassVal("class", "tip_white")
                     end
 
-                    lBtn:Enable(UI_SETTINGS[id].index > 1)
-                    rBtn:Enable(UI_SETTINGS[id].index < #(UI_SETTINGS[id].options))
+                    lBtn:Enable(v.params.cycle or UI_SETTINGS[id].index > 1)
+                    rBtn:Enable(v.params.cycle or UI_SETTINGS[id].index < #(UI_SETTINGS[id].options))
 
                     UI_SETTINGS[id].widgets = {
                         lBtn = lBtn, rBtn = rBtn, value = panel:GetChildChecked("ListPanelDescText", true)

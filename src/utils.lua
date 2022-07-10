@@ -346,8 +346,21 @@ function sortedKeys(t)
 	return tmp
 end
 
-function classListAll()
-	local tmp =  {
+function contains(array, value)
+	for k, v in pairs(array) do
+		if (v == value) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function classListAll(canBeNil)
+	local tmp = {}
+	if (canBeNil) then table.insert(tmp, "-") end
+
+	local _common =  {
 		"ColorWhite",
 		"DamageYellow",
 		"DamageRed",
@@ -369,10 +382,19 @@ function classListAll()
 		"RelicCursed",
 
 		"Golden",
+		"Spouse",
+		"IMPrice",
+		"IMPriceDisabled",
+		"IMPriceLocked",
+		"SubscribeWarning",
 	}
 
+	for k, v in pairs(_common) do
+		table.insert(tmp, v)
+	end
+
 	for k, v in pairs(sortedKeys(COLOR_CLASSES)) do
-		if (starts(v, "Damage")) then
+		if (starts(v, "Damage") and not contains(tmp, v)) then
 			table.insert(tmp, v)
 		end
 	end

@@ -475,14 +475,16 @@ function setUpTemplates()
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
 
+	UI_SETTINGS = {}
+
 	UI.addGroup("PanelSettings", "Настройки панелей", {
 		UI.createInput("MaxBars", "Максимально количество панелей" , {
 			maxChars = 3,
 			filter = "_INT"
 		}, '7'),
-		UI.createList("IconSize", "Размер иконки", range(16, 128, 4), 4),
-		UI.createList("IconPadding", "Отступ вокруг иконки", range(0, 6, 1), 1),
-		UI.createList("TextPadding", "Отступ текста от иконки", range(0, 10, 1), 1),
+		UI.createList("IconSize", "Размер иконки", range(16, 128, 4), 4, false),
+		UI.createList("IconPadding", "Отступ вокруг иконки", range(0, 6, 1), 1, false),
+		UI.createList("TextPadding", "Отступ текста от иконки", range(0, 10, 1), 2, false),
 		UI.createInput("ShowTime", "Время жизни панели (мс)" , {
 			maxChars = 6,
 			filter = "_INT"
@@ -492,7 +494,7 @@ function setUpTemplates()
 	UI.addGroup("Formatting", "Форматирование", {
 		UI.createCheckBox("ShortNum", "Сокращать цифры урона", true),
 		UI.createCheckBox("ShortenToMill", "Сокращать до миллиона", true),
-		UI.createList("FloatFormat", "Количество символов после запятой", range(1, 5, 1), 1),
+		UI.createList("FloatFormat", "Количество символов после запятой", range(0, 5, 1), 2, false),
 
 		UI.createCheckBox("ReplaceByName", "Отображать имя юнита вместо названия", false),
 		UI.createCheckBox("IgnoreBloodlust", "Игнор кровожадности и прочего нерунического хила (в бою)", true),
@@ -501,10 +503,21 @@ function setUpTemplates()
 	})
 
 	UI.addGroup("NumColors", "Цвета значений", {
-		UI.createList("DMG_NUM", "Обыч. урон", classListAll(), 1),
-		UI.createList("CRIT_DMG_NUM", "Крит. урон", classListAll(), 1),
-		UI.createList("HEAL_NUM", "Обыч. хил", classListAll(), 1),
-		UI.createList("CRIT_HEAL_NUM", "Крит. урон", classListAll(), 1),
+		UI.createList("DMG_NUM", "Обычный урон", classListAll(), 2, true),
+		UI.createList("CRIT_DMG_NUM", "Критический урон", classListAll(), 3, true),
+		UI.createList("HEAL_NUM", "Обычный хил", classListAll(), 4, true),
+		UI.createList("CRIT_HEAL_NUM", "Критический. урон", classListAll(), 5, true),
+		UI.createList("MISS_NUM", "Уклонение", classListAll(), 6, true),
+		UI.createList("LETHAL_NUM", "Летальный урон", classListAll(true), 0, true),
+	})
+
+	UI.addGroup("LabelColors", "Цвета подписей", {
+		UI.createList("DMG_NAME", "Обыч. урон", classListAll(), 1, true),
+		UI.createList("CRIT_DMG_NAME", "Крит. урон", classListAll(), 1, true),
+		UI.createList("HEAL_NAME", "Обыч. хил", classListAll(), 1, true),
+		UI.createList("CRIT_HEAL_NAME", "Крит. урон", classListAll(), 1, true),
+		UI.createList("MISS_NAME", "Уклонение", classListAll(), 1, true),
+		UI.createList("LETHAL_NAME", "Летальный урон", classListAll(true), 15, true),
 	})
 
 	UI.addGroup("DamageFilteringP", "Фильтрация [Игроки]", {
@@ -521,6 +534,25 @@ function setUpTemplates()
 			filter = "_INT"
 		}, '1000'),
 		UI.createInput("MinIncPlayerHeal", "Минимальное отображение входящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+	})
+
+	UI.addGroup("DamageFilteringU", "Фильтрация [Мобы]", {
+		UI.createInput("MinOutUnitDmg", "Минимальное отображение исходящего урона" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinOutUnitHeal", "Минимальное отображение исходящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinIncUnitDmg", "Минимальное отображение входящего урона" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+		UI.createInput("MinIncUnitHeal", "Минимальное отображение входящего лечения" , {
 			maxChars = 10,
 			filter = "_INT"
 		}, '1000'),
