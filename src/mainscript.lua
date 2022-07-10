@@ -475,36 +475,97 @@ function setUpTemplates()
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
 
-	UI.addGroup("ShowDD", "Отображение урона", {
-		UI.createCheckBox("shorten", "Сокращать цифры урона", true),
-		UI.createList("maxBars", "Количество панелей", {
-			2, 3, 4, 5, 6, 7, 8, 9, 10
-		}, 1),
-		UI.createInput("testInput", "Пример инпута" , {
-			maxChars = 10,
-		}, 'test'),
-		UI.createInput("testInput2", "Пример инпута NUM" , {
-			maxChars = 10,
-			filter = "_NUM"
-		}, 'test'),
-		UI.createInput("testInput3", "Пример инпута INT" , {
+	UI.addGroup("PanelSettings", "Настройки панелей", {
+		UI.createInput("MaxBars", "Максимально количество панелей" , {
+			maxChars = 3,
+			filter = "_INT"
+		}, '7'),
+		UI.createList("IconSize", "Размер иконки", range(16, 128, 4), 4),
+		UI.createList("IconPadding", "Отступ вокруг иконки", range(0, 6, 1), 1),
+		UI.createList("TextPadding", "Отступ текста от иконки", range(0, 10, 1), 1),
+		UI.createInput("ShowTime", "Время жизни панели (мс)" , {
+			maxChars = 6,
+			filter = "_INT"
+		}, '8000'),
+	})
+
+	UI.addGroup("Formatting", "Форматирование", {
+		UI.createCheckBox("ShortNum", "Сокращать цифры урона", true),
+		UI.createCheckBox("ShortenToMill", "Сокращать до миллиона", true),
+		UI.createList("FloatFormat", "Количество символов после запятой", range(1, 5, 1), 1),
+
+		UI.createCheckBox("ReplaceByName", "Отображать имя юнита вместо названия", false),
+		UI.createCheckBox("IgnoreBloodlust", "Игнор кровожадности и прочего нерунического хила (в бою)", true),
+		UI.createCheckBox("HideOutMisses", "Скрывать исходящие промахи", true),
+		UI.createCheckBox("HideIncMisses", "Скрывать входящие промахи", true),
+	})
+
+	UI.addGroup("TextColors", "Цвета", {
+		UI.createList("DMG_NUM", "Обыч. урон [значение]", classList("Color"), 1),
+		UI.createList("CRIT_DMG_NUM", "Крит. урон [значение]", classList("Color"), 1),
+		UI.createList("HEAL_NUM", "Обыч. хил [значение]", classList("Color"), 1),
+		UI.createList("CRIT_HEAL_NUM", "Крит. урон [значение]", classList("Color"), 1),
+	})
+
+	UI.addGroup("DamageFilteringP", "Фильтрация [Игроки]", {
+		UI.createInput("MinOutPlayerDmg", "Минимальное отображение исходящего урона" , {
 			maxChars = 10,
 			filter = "_INT"
-		}, '100'),
-		UI.createSlider("redColor", "Пример слайдера", {
+		}, '10000'),
+		UI.createInput("MinOutPlayerHeal", "Минимальное отображение исходящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinIncPlayerDmg", "Минимальное отображение входящего урона" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+		UI.createInput("MinIncPlayerHeal", "Минимальное отображение входящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+	})
+
+	UI.addGroup("DamageFilteringU", "Фильтрация [Мобы]", {
+		UI.createInput("MinOutUnitDmg", "Минимальное отображение исходящего урона" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinOutUnitHeal", "Минимальное отображение исходящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinIncUnitDmg", "Минимальное отображение входящего урона" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+		UI.createInput("MinIncUnitHeal", "Минимальное отображение входящего лечения" , {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+	})
+
+	UI.addGroup("PanelBackground", "Подложка", {
+		UI.createCheckBox("ShowBg", "Отображение подложки", false),
+		UI.createSlider("r", "Красный канал", {
 			stepsCount = 255,
 			width = 212,
 		}, 0),
-		UI.createButton("testButton", "Пример кнопки", {
-			width = 128,
-			states = {
-				'Стейт 1',
-				'Стейт 2',
-				'Стейт 3',
-			},
-			callback = switchButtonState
-		}, 2)
+		UI.createSlider("g", "Зеленый канал", {
+			stepsCount = 255,
+			width = 212,
+		}, 0),
+		UI.createSlider("b", "Синий канал", {
+			stepsCount = 255,
+			width = 212,
+		}, 0),
+		UI.createSlider("a", "Альфа канал", {
+			stepsCount = 255,
+			width = 212,
+		}, 0),
 	})
+
+	UI.render()
 end
 
 function switchButtonState(widget, settings)

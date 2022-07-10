@@ -1,5 +1,8 @@
 Global( "UI", {} )
 Global( "UI_SETTINGS", {} )
+Global( "SETTING_GROUPS", {} )
+Global( "SETTING_GROUPS_KEYS_ORDER", {} )
+Global( "PANEL_WIDGETS", {} )
 
 local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
 
@@ -35,12 +38,19 @@ function onListBtn(params)
                 return
             end
 
-            settings.widgets.value:SetVal("list_desctext", tostring(settings.options[index]))
+            settings.widgets.value:SetVal("text", tostring(settings.options[index]))
             settings.widgets.lBtn:Enable(index > 1)
             settings.widgets.rBtn:Enable(index < #(settings.options))
 
-            UI_SETTINGS[params.sender].value = settings.options[index]
+            local tmp = tostring(settings.options[index])
+            UI_SETTINGS[params.sender].value = tmp
             UI_SETTINGS[params.sender].index = index
+
+            if (COLOR_CLASSES and COLOR_CLASSES[tmp]) then
+                settings.widgets.value:SetClassVal("class", tmp)
+            else
+                settings.widgets.value:SetClassVal("class", "tip_white")
+            end
 
             saveSettings()
         end
@@ -68,7 +78,6 @@ function onInputChange(params)
 
         UI_SETTINGS[params.sender].value = tempVal
         params.widget:SetFocus(false)
-
         saveSettings()
     end
 end
@@ -76,7 +85,6 @@ end
 function onInputEsc(params)
     if (params.widget) then
         onInputChange(params)
-
         params.widget:SetFocus(false)
     end
 end
@@ -94,8 +102,6 @@ function onSliderChange(params)
 end
 
 function onSettingButton(params)
-    pushToChatSimple(params.sender)
-
     if (params.sender and UI_SETTINGS[params.sender]) then
         local cb = UI_SETTINGS[params.sender].callback
         if (cb and type(cb) == "function") then
@@ -112,14 +118,22 @@ end
 function onMainRestore()
     -- saveSettings()
 
-    -- for k, v in pairs(UI_SETTINGS) do
-    --     pushToChatSimple(k)
-    --     if (v and v.type) then
-    --         if (v.type == "Checkbox") then
-    --             UI_SETTINGS[k].value = v.defaultValue
-    --         end
-    --     end
-    -- end
+    for k, v in pairs(UI_SETTINGS) do
+        pushToChatSimple(k)
+        if (v and v.type) then
+            if (v.type == "Checkbox" or v.type == "Slider" or v.type == "Input") then
+                UI_SETTINGS[k].value = v.defaultValue
+            elseif (v.type == "List") then
+                UI_SETTINGS[k].index = v.defaultIndex
+                UI_SETTINGS[k].value = v.options[v.defaultIndex]
+            elseif (v.type == "Button") then
+                UI_SETTINGS[k].state = v.defaultState
+                UI_SETTINGS[k].value = v.states[v.defaultState]
+            end
+        end
+    end
+
+    UI.render()
 end
 
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -134,10 +148,8 @@ function UI.init(name)
     common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
     common.RegisterReactionHandler(onSliderChange, "slider_changed")
     common.RegisterReactionHandler(onSettingButton, "setting_button_pressed")
-
     common.RegisterReactionHandler(onMainAccept, "main_accept_pressed")
     common.RegisterReactionHandler(onMainRestore, "main_restore_pressed")
-
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -255,40 +267,73 @@ function UI.createButton(name, label, options, default)
 end
 
 function UI.addGroup(name, label, settings)
-	local scrollCont = mainForm:GetChildChecked("SettingsMain", false):GetChildChecked("OptionsContainer", true)
+    SETTING_GROUPS[name] = {
+        label = label,
+        settings = settings
+    }
+    table.insert(SETTING_GROUPS_KEYS_ORDER, name)
+end
+
+function UI.removeGroup(name)
+    SETTING_GROUPS[name] = nil
+    table.remove(SETTING_GROUPS_KEYS_ORDER, name)
+end
+
+function UI.render()
+
+    local scrollCont = mainForm:GetChildChecked("OptionsContainer", true)
     local minPosY = 16
     local maxW = 575
-    local frameH = ((#settings + 2) * 45) + 30
-    
-    local background = CreateWG("BackFrame", "BG", mainForm, true, { alignX=3, posX = 0, highPosX = 0, alignY = 0, sizeY=frameH })
-    background:Show(true)
-    local header = background:GetChildChecked("GroupHeader", false):GetChildChecked("HeaderText", false)
-    header:SetVal("name", label)
 
-    if (settings) then
+    -- reset scroll content
+    scrollCont:RemoveItems()
+
+    for _index, _key in pairs(SETTING_GROUPS_KEYS_ORDER) do
+        local group_name = _key
+        local group = SETTING_GROUPS[_key]
+        if (not group) then return end
+        
+        local settings = group.settings
+        local grouplabel = group.label
+        local frameH = ((#settings) * 45) + 30
+
+        local groupFrame = CreateWG("BackFrame", "BG", mainForm, true, { alignX=3, posX = 0, highPosX = 0, alignY = 0, sizeY=frameH })
+        groupFrame:Show(true)
+
+        local header = groupFrame:GetChildChecked("GroupHeader", false):GetChildChecked("HeaderText", false)
+        header:SetVal("name", grouplabel)
+
         for i = 1, #settings, 1 do
             local v = settings[i]
             if (v and v.type) then
-                local id = name.."_"..v.name
-
+                local id = group_name.."_"..v.name
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-               C H E C K B O X               -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 if (v.type == "Checkbox") then
-                    local checkboxPanel = CreateWG("CheckboxPanel", "CheckboxPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
-                    local checkboxBtn = checkboxPanel:GetChildChecked("Checkbox", false)
-                    checkboxBtn:SetName(id)
+                    local panel = CreateWG("CheckboxPanel", "CheckboxPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local button = panel:GetChildChecked("Checkbox", false)
+                    local label = panel:GetChildChecked("CheckboxPanelText", false)
+                    groupFrame:AddChild(panel)
 
-                    checkboxPanel:GetChildChecked("CheckboxPanelText", false):SetVal("checkbox_text", v.label)
-                    background:AddChild(checkboxPanel)
+                    button:SetName(id)
+                    label:SetVal("checkbox_text", v.label)
                     
                     if (not UI_SETTINGS[id]) then
                         UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultValue = v.params.defaultValue }
                     end
-                    checkboxBtn:SetVariant(chVariant(UI_SETTINGS[id].value))
-                elseif (v.type == "Button") then
-                    local buttonPanel = CreateWG("ButtonPanel", "ButtonPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
-                    background:AddChild(buttonPanel)
-                    buttonPanel:GetChildChecked("ButtonPanelText", false):SetVal("text", v.label)
 
-                    local button = buttonPanel:GetChildChecked("Button", true)
+                    button:SetVariant(chVariant(UI_SETTINGS[id].value))
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-                 B U T T O N                 -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                elseif (v.type == "Button") then
+                    local panel = CreateWG("ButtonPanel", "ButtonPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local button = panel:GetChildChecked("Button", true)
+                    local label = panel:GetChildChecked("ButtonPanelText", false)
+                    groupFrame:AddChild(panel)
+
+                    label:SetVal("text", v.label)
                     button:SetName(id)
                     wtSetPlace(button, { sizeX = v.params.options.width })
 
@@ -305,14 +350,18 @@ function UI.addGroup(name, label, settings)
 
                     button:SetVal("label", toWS(UI_SETTINGS[id].value))
                     UI_SETTINGS[id].callback = v.params.callback
-
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-                   L I S T                   -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "List") then
-                    local listPanel = CreateWG("ListPanel", "ListPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
-                    background:AddChild(listPanel)
-                    listPanel:GetChildChecked("ListPanelText", false):SetVal("list_text", v.label)
+                    local panel = CreateWG("ListPanel", "ListPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local label = panel:GetChildChecked("ListPanelText", false)
+                    local valueLabel = panel:GetChildChecked("ListPanelDescText", true)
+                    local lBtn = panel:GetChildChecked("ListPanelButtonLeft", true)
+                    local rBtn = panel:GetChildChecked("ListPanelButtonRight", true)
+                    groupFrame:AddChild(panel)
 
-                    local lBtn = listPanel:GetChildChecked("ListPanelButtonLeft", true)
-                    local rBtn = listPanel:GetChildChecked("ListPanelButtonRight", true)
+                    label:SetVal("list_text", v.label)
                     lBtn:SetName(id)
                     rBtn:SetName(id)
 
@@ -320,23 +369,34 @@ function UI.addGroup(name, label, settings)
                         UI_SETTINGS[id] = { type = v.type, value = v.params.value, defaultIndex = v.params.defaultIndex, index = v.params.index, options = v.params.options }
                     end
 
-                    listPanel:GetChildChecked("ListPanelDescText", true):SetVal("list_desctext", tostring(UI_SETTINGS[id].value))
+                    local tmp = tostring(UI_SETTINGS[id].value)
+                    valueLabel:SetVal("text", tmp)
+
+                    if (COLOR_CLASSES and COLOR_CLASSES[tmp]) then
+                        valueLabel:SetClassVal("class", tmp)
+                    else
+                        valueLabel:SetClassVal("class", "tip_white")
+                    end
+
                     lBtn:Enable(UI_SETTINGS[id].index > 1)
                     rBtn:Enable(UI_SETTINGS[id].index < #(UI_SETTINGS[id].options))
 
                     UI_SETTINGS[id].widgets = {
-                        lBtn = lBtn, rBtn = rBtn, value = listPanel:GetChildChecked("ListPanelDescText", true)
+                        lBtn = lBtn, rBtn = rBtn, value = panel:GetChildChecked("ListPanelDescText", true)
                     }
-
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-                 S L I D E R                 -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "Slider") then
-                    local sliderPanel = CreateWG("SliderPanel", "SliderPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
-                    background:AddChild(sliderPanel)
-                    sliderPanel:GetChildChecked("SliderPanelText", false):SetVal("slider_text", v.label)
-
-                    local discreteSlider = sliderPanel:GetChildChecked("DiscreteSlider", true)
-                    local barPanel = sliderPanel:GetChildChecked("SliderPanelBar", true)
+                    local panel = CreateWG("SliderPanel", "SliderPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local label = panel:GetChildChecked("SliderPanelText", false)
+                    local discreteSlider = panel:GetChildChecked("DiscreteSlider", true)
+                    local barPanel = panel:GetChildChecked("SliderPanelBar", true)
                     local valueLabel = barPanel:GetChildChecked("SliderPanelBarText", true)
 
+                    groupFrame:AddChild(panel)
+
+                    label:SetVal("slider_text", v.label)
                     wtSetPlace(barPanel, { sizeX = (v.params.options.width + 61) })
                     discreteSlider:SetStepsCount(v.params.options.stepsCount)
                     discreteSlider:SetName(id)
@@ -347,15 +407,17 @@ function UI.addGroup(name, label, settings)
 
                     discreteSlider:SetPos(UI_SETTINGS[id].value)
                     valueLabel:SetVal("text", tostring(UI_SETTINGS[id].value))
-
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-                  I N P U T                  -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "Input") then
-                    local inputPanel = CreateWG("InputPanel", "InputPanel", background, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
-                    background:AddChild(inputPanel)
-                    inputPanel:GetChildChecked("InputPanelText", false):SetVal("text", v.label)
+                    local panel = CreateWG("InputPanel", "InputPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local label = panel:GetChildChecked("InputPanelText", false):SetVal("text", v.label)
+                    groupFrame:AddChild(panel)
 
-                    local inputBg = inputPanel:GetChildChecked("InputPanelBg", true)
+                    local inputBg = panel:GetChildChecked("InputPanelBg", true)
                     wtSetPlace(inputBg, { sizeX = (v.params.options.width) })
-                    local editLine = inputPanel:GetChildChecked("EditLine"..v.params.options.filter, true)
+                    local editLine = panel:GetChildChecked("EditLine"..v.params.options.filter, true)
                     editLine:SetMaxSize( v.params.options.maxChars )
                     editLine:SetMaxSize( v.params.options.maxChars )
                     editLine:Show(true)
@@ -370,9 +432,42 @@ function UI.addGroup(name, label, settings)
                 end
             end
         end
+
+        printSettings()
+        scrollCont:PushBack( groupFrame )
     end
-
-    printSettings()
-
-    scrollCont:PushBack( background )
 end
+
+	-- UI.addGroup("ShowDD", "Отображение урона", {
+	-- 	UI.createCheckBox("shorten", "Сокращать цифры урона", true),
+	-- 	UI.createList("maxBars", "Количество панелей", {
+	-- 		2, 3, 4, 5, 6, 7, 8, 9, 10
+	-- 	}, 1),
+	-- 	UI.createList("colors", "Цвета", {
+	-- 		"ColorWhite", "ColorGreen", "ColorRed", "ColorBlue", "ColorOrange", "ColorYellow", "ColorBlack", "ColorMagenta", "ColorCian"
+	-- 	}, 1),
+	-- 	UI.createInput("testInput", "Пример инпута" , {
+	-- 		maxChars = 10,
+	-- 	}, 'test'),
+	-- 	UI.createInput("testInput2", "Пример инпута NUM" , {
+	-- 		maxChars = 10,
+	-- 		filter = "_NUM"
+	-- 	}, 'test'),
+	-- 	UI.createInput("testInput3", "Пример инпута INT" , {
+	-- 		maxChars = 10,
+	-- 		filter = "_INT"
+	-- 	}, '100'),
+	-- 	UI.createSlider("redColor", "Пример слайдера", {
+	-- 		stepsCount = 255,
+	-- 		width = 212,
+	-- 	}, 0),
+	-- 	UI.createButton("testButton", "Пример кнопки", {
+	-- 		width = 128,
+	-- 		states = {
+	-- 			'Стейт 1',
+	-- 			'Стейт 2',
+	-- 			'Стейт 3',
+	-- 		},
+	-- 		callback = switchButtonState
+	-- 	}, 2)
+	-- })
