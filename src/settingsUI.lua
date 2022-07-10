@@ -116,7 +116,8 @@ function onMainAccept()
 end
 
 function onMainRestore()
-    -- saveSettings()
+    -- userMods.SetGlobalConfigSection("UI_SETTINGS", {})
+    -- UI_SETTINGS = {}
 
     for k, v in pairs(UI_SETTINGS) do
         pushToChatSimple(k)
@@ -292,7 +293,7 @@ function UI.render()
         local group_name = _key
         local group = SETTING_GROUPS[_key]
         if (not group) then return end
-        
+
         local settings = group.settings
         local grouplabel = group.label
         local frameH = ((#settings) * 45) + 30

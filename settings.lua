@@ -15,8 +15,6 @@ Global("Settings", {
         shortNum = true,
     -- Показывать имя юнита вместо названия
         replaceByUnitName = false,
-    -- Игнор самохила
-        ignoreSelfHeal = true,
     -- Игнор кровожадки
         ignoreBloodlust = true,
     -- Цвет задней подложки

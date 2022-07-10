@@ -12,7 +12,6 @@ Global("COLOR_CLASSES", {
     ["tip_blue"] = true,
     ["WarningLogBlue"] = true,
     ["StatFairyBonus"] = true,
-    ["DamageVisMiss"] = true,
     ["log_blue"] = true,
     ["DamageVisBuffGain"] = true,
     ["WarningLogRed"] = true,
@@ -60,7 +59,6 @@ Global("COLOR_CLASSES", {
     ["DamageWhite"] = true,
     ["QuestLogGray"] = true,
     ["LabelCenterSmall8"] = true,
-    ["DamageVisEnergyDrain"] = true,
     ["EditLinePageCountSelection"] = true,
     ["ColorWarmRed"] = true,
     ["GrayQuestName"] = true,
@@ -69,7 +67,6 @@ Global("COLOR_CLASSES", {
     ["log_violet"] = true,
     ["DamageYellow"] = true,
     ["WarningLogGreen"] = true,
-    ["DamageVisMpDrain"] = true,
     ["CoinSettings"] = true,
     ["nav_enemy"] = true,
     ["SubscribeNormal"] = true,
@@ -79,12 +76,9 @@ Global("COLOR_CLASSES", {
     ["tip_base"] = true,
     ["tip_white"] = true,
     ["ColorMagenta"] = true,
-    ["DamageVisBarrier"] = true,
     ["Rare"] = true,
     ["DamageGreen"] = true,
-    ["DamageVisReputationDrain"] = true,
     ["LogColorPink"] = true,
-    ["DamageVisBlock"] = true,
     ["log_brown"] = true,
     ["Common"] = true,
     ["RepKindly"] = true,
@@ -128,7 +122,6 @@ Global("COLOR_CLASSES", {
     ["log_light_yellow"] = true,
     ["ColorBlue"] = true,
     ["Goods"] = true,
-    ["DamageVisBarrierGain"] = true,
     ["LogColorBrown"] = true,
     ["log_green"] = true,
     ["ColorGreen"] = true,
@@ -140,7 +133,6 @@ Global("COLOR_CLASSES", {
     ["EditLineOnPaper"] = true,
     ["Neutral"] = true,
     ["QuestProgressPercent"] = true,
-    ["DamageVisCriticalDrain"] = true,
     ["alignRight"] = true,
     ["RepEnemy"] = true,
     ["EditLineGlobalCenter"] = true,
@@ -183,7 +175,6 @@ Global("COLOR_CLASSES", {
     ["alignLeft"] = true,
     ["tutorGreen"] = true,
     ["StatBuffed"] = true,
-    ["DamageVisParry"] = true,
     ["nav_friend"] = true,
     ["button"] = true,
     ["WhiteSubtask"] = true,
@@ -212,9 +203,7 @@ Global("COLOR_CLASSES", {
     ["QuestLogYellow"] = true,
     ["DamageVisEnergyGain"] = true,
     ["nav_dead"] = true,
-    ["DamageVisDodge"] = true,
     ["RedQuestName"] = true,
-    ["DamageVisAbsorb"] = true,
     ["CombatOrange"] = true,
     ["TabSelected"] = true,
     ["Party"] = true,
@@ -231,27 +220,13 @@ Global("COLOR_CLASSES", {
     ["RepUnfriendly"] = true,
     ["alignCenter"] = true,
     ["UncommonCursed"] = true,
-    ["DamageVisResist"] = true,
     ["QuestProgressFullPercent"] = true,
-    ["Size10"] = true,
-    ["Size11"] = true,
-    ["Avatar"] = true,
-    ["Size12"] = true,
-    ["Size13"] = true,
-    ["Size14"] = true,
     ["ListItemNormal"] = true,
     ["ColorRed"] = true,
-    ["Size20"] = true,
-    ["Size15"] = true,
-    ["Size16"] = true,
     ["header"] = true,
     ["highlighted"] = true,
-    ["Size22"] = true,
-    ["Size17"] = true,
     ["TabDisabled"] = true,
-    ["Size18"] = true,
     ["CoinSettingsRed"] = true,
-    ["Size24"] = true,
     ["ReputationConfidential"] = true,
     ["EditLineMoneyCount"] = true,
     ["JunkCursed"] = true,
@@ -350,6 +325,55 @@ function classList(filter)
 	for k, v in pairs(COLOR_CLASSES) do
 		if (string.find(k, filter)) then
 			table.insert(tmp, k)
+		end
+	end
+
+	return tmp
+end
+
+function starts(String,Start)
+	return string.sub(String,1,string.len(Start))==Start
+end
+
+function sortedKeys(t)
+	local tmp = {}
+
+	for k, v in pairs(t) do
+		table.insert(tmp, k)
+	end
+
+	table.sort(tmp, function(a, b) return a:upper() < b:upper() end)
+	return tmp
+end
+
+function classListAll()
+	local tmp =  {
+		"ColorWhite",
+		"DamageYellow",
+		"DamageRed",
+		"ColorWarmGreen",
+		"DamageGreen",
+		"Junk",
+		"JunkCursed",
+		"Common",
+		"CommonCursed",
+		"Uncommon",
+		"UncommonCursed",
+		"Rare",
+		"RareCursed",
+		"Epic",
+		"EpicCursed",
+		"Legendary",
+		"LegendaryCursed",
+		"Relic",
+		"RelicCursed",
+
+		"Golden",
+	}
+
+	for k, v in pairs(sortedKeys(COLOR_CLASSES)) do
+		if (starts(v, "Damage")) then
+			table.insert(tmp, v)
 		end
 	end
 

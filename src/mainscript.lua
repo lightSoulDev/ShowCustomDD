@@ -500,11 +500,11 @@ function setUpTemplates()
 		UI.createCheckBox("HideIncMisses", "Скрывать входящие промахи", true),
 	})
 
-	UI.addGroup("TextColors", "Цвета", {
-		UI.createList("DMG_NUM", "Обыч. урон [значение]", classList("Color"), 1),
-		UI.createList("CRIT_DMG_NUM", "Крит. урон [значение]", classList("Color"), 1),
-		UI.createList("HEAL_NUM", "Обыч. хил [значение]", classList("Color"), 1),
-		UI.createList("CRIT_HEAL_NUM", "Крит. урон [значение]", classList("Color"), 1),
+	UI.addGroup("NumColors", "Цвета значений", {
+		UI.createList("DMG_NUM", "Обыч. урон", classListAll(), 1),
+		UI.createList("CRIT_DMG_NUM", "Крит. урон", classListAll(), 1),
+		UI.createList("HEAL_NUM", "Обыч. хил", classListAll(), 1),
+		UI.createList("CRIT_HEAL_NUM", "Крит. урон", classListAll(), 1),
 	})
 
 	UI.addGroup("DamageFilteringP", "Фильтрация [Игроки]", {
@@ -521,25 +521,6 @@ function setUpTemplates()
 			filter = "_INT"
 		}, '1000'),
 		UI.createInput("MinIncPlayerHeal", "Минимальное отображение входящего лечения" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '1000'),
-	})
-
-	UI.addGroup("DamageFilteringU", "Фильтрация [Мобы]", {
-		UI.createInput("MinOutUnitDmg", "Минимальное отображение исходящего урона" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '10000'),
-		UI.createInput("MinOutUnitHeal", "Минимальное отображение исходящего лечения" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '10000'),
-		UI.createInput("MinIncUnitDmg", "Минимальное отображение входящего урона" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '1000'),
-		UI.createInput("MinIncUnitHeal", "Минимальное отображение входящего лечения" , {
 			maxChars = 10,
 			filter = "_INT"
 		}, '1000'),
