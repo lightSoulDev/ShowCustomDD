@@ -581,6 +581,10 @@ function setUpTemplates()
 	UI.setTabs({
 		{
 			label = "Common",
+			buttons = {
+				left = { "Restore" },
+				right = { "Accept" }
+			},
 			groups = {
 				"PanelSettings",
 				"Formatting"
@@ -588,6 +592,10 @@ function setUpTemplates()
 		},
 		{
 			label = "Filtering",
+			buttons = {
+				left = { "Restore" },
+				right = { "Accept" }
+			},
 			groups = {
 				"DamageFilteringP",
 				"DamageFilteringU"
@@ -595,6 +603,10 @@ function setUpTemplates()
 		},
 		{
 			label = "Backlayer",
+			buttons = {
+				left = { "Restore" },
+				right = { "Accept" }
+			},
 			groups = {
 				"PanelBackground",
 			}

@@ -5,6 +5,7 @@ Global( "SETTING_GROUPS_KEYS_ORDER", {} )
 Global( "PANEL_WIDGETS", {} )
 Global( "TABS", {} )
 
+local ACTIVE_BUTTONS = {}
 local CURRENT_TAB = nil
 local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
 
@@ -125,6 +126,11 @@ function onMainRestore()
     -- UI_SETTINGS = {}
 
     for k, v in pairs(UI_SETTINGS) do
+        local split_string = {}
+        for w in k:gmatch('([^_]+)') do table.insert(split_string, w) end
+
+        if (TABS and not tabContainsGroup(TABS, CURRENT_TAB, split_string[1])) then goto continue end
+
         if (v and v.type) then
             if (v.type == "Checkbox" or v.type == "Slider" or v.type == "Input") then
                 UI_SETTINGS[k].value = v.defaultValue
@@ -136,15 +142,13 @@ function onMainRestore()
                 UI_SETTINGS[k].value = v.states[v.defaultState]
             end
         end
+        ::continue::
     end
 
     UI.render()
 end
 
 function onTabSwitch(params)
-    -- for k, v in pairs(params) do
-    --     pushToChatSimple("|___ "..(k).." = "..tostring(v))
-    -- end
     if (not params.sender) then return end
     local split_string = {}
     for w in params.sender:gmatch('([^_]+)') do table.insert(split_string, w) end
@@ -338,6 +342,34 @@ function UI.render()
     local minPosY = 16
     local maxW = 575
 
+    for index, active_btn in pairs(ACTIVE_BUTTONS) do
+        active_btn:Show(false)
+    end
+
+    local tabSettings = getTab(TABS, CURRENT_TAB)
+    if (tabSettings.buttons) then
+        if (tabSettings.buttons.left) then
+            for i, v in pairs(tabSettings.buttons.left) do
+                local button = SettingsMainFrame:GetChildChecked("Button"..(v), false)
+                if (button) then
+                    button:Show(true)
+                    wtSetPlace(button, { alignX = 0, posX = (35 + (i-1) * 115)})
+                    table.insert(ACTIVE_BUTTONS, button)
+                end
+            end
+        end
+        if (tabSettings.buttons.right) then
+            for i, v in pairs(tabSettings.buttons.right) do
+                local button = SettingsMainFrame:GetChildChecked("Button"..(v), false)
+                if (button) then
+                    button:Show(true)
+                    wtSetPlace(button, { alignX = 1, highPosX = (45 + (i-1) * 115)})
+                    table.insert(ACTIVE_BUTTONS, button)
+                end
+            end
+        end
+    end
+
     -- reset scroll content
     scrollCont:RemoveItems()
 
@@ -346,7 +378,6 @@ function UI.render()
         local group = SETTING_GROUPS[_key]
         if (not group) then return end
         local TAB_SHOW = true
-
         if (TABS and not tabContainsGroup(TABS, CURRENT_TAB, group_name)) then TAB_SHOW = false end
         
         local settings = group.settings

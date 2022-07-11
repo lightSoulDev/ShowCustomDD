@@ -23,6 +23,6 @@
 		</Item>
 	</Variants>
 
-	<Visible>true</Visible>
+	<Visible>false</Visible>
 	<Enabled>true</Enabled>
 </WidgetButton>
