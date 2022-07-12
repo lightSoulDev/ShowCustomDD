@@ -19,7 +19,7 @@
 	<PickChildrenOnly>false</PickChildrenOnly>
 	<sliderButton href="SliderButton.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	<moveArrangement>WIDGETS_ARRANGEMENT_L2R</moveArrangement>
-	<reactionChanged>slider_changed</reactionChanged>
+	<reactionChanged>setting_slider</reactionChanged>
 	<stepsCount>255</stepsCount>
 	<clipContent>false</clipContent>
 </WidgetDiscreteSlider>

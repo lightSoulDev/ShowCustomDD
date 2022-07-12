@@ -25,7 +25,7 @@
 			<StateDisabled>
 				<LayerMain href="Textures/RightButtonDisabled.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateDisabled>
-			<Reaction>list_rightbutton_pressed</Reaction>
+			<Reaction>setting_list_button_right</Reaction>
 			<ReactionOnPointing>list_rightbutton_over</ReactionOnPointing>
 		</Item>
 	</Variants>

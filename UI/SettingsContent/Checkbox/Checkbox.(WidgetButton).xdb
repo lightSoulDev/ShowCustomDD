@@ -39,7 +39,7 @@
 			<StateNormal>
 				<LayerMain href="Textures/CheckBoxStone.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
-			<Reaction>checkbox_pressed</Reaction>
+			<Reaction>setting_cb</Reaction>
 			<ReactionOnUp>true</ReactionOnUp>
 			<ReactionOnPointing>checkbox_over</ReactionOnPointing>
 		</Item>
@@ -48,7 +48,7 @@
 			<StateNormal>
 				<LayerMain href="Textures/CheckBoxStoneChecked.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateNormal>
-			<Reaction>checkbox_pressed</Reaction>
+			<Reaction>setting_cb</Reaction>
 			<ReactionOnUp>true</ReactionOnUp>
 			<ReactionOnPointing>checkbox_over</ReactionOnPointing>
 		</Item>

@@ -17,6 +17,6 @@
 	<Visible>true</Visible>
 	<sliderButton href="ScrollBars/ScrollThumb.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 	<moveArrangement>WIDGETS_ARRANGEMENT_T2B</moveArrangement>
-	<reactionChanged>slider_changed</reactionChanged>
+	<reactionChanged>setting_slider</reactionChanged>
 	<discreteStep>64</discreteStep>
 </WidgetGlideSlider>

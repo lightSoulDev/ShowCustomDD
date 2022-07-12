@@ -29,8 +29,8 @@
 	<Cursor2Layer href="Textures/Cursor2.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<CursorWidth>2</CursorWidth>
 	<CursorChangeTimeMs>500</CursorChangeTimeMs>
-	<ReactionEsc>RenameCancelReaction</ReactionEsc>
-	<ReactionEnter>RenameBuildReaction</ReactionEnter>
+	<ReactionEsc>setting_input_esc</ReactionEsc>
+	<ReactionEnter>setting_input_change</ReactionEnter>
 	<ReactionChanged />
 	<reactionFocusChanged>RenameFocusChanged</reactionFocusChanged>
 	<TextStyle>

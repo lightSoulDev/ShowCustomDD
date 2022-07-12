@@ -4,6 +4,7 @@ Global( "SETTING_GROUPS", {} )
 Global( "SETTING_GROUPS_KEYS_ORDER", {} )
 Global( "PANEL_WIDGETS", {} )
 Global( "TABS", {} )
+Global( "USER_SETTINGS", {} )
 
 local ITEM_SETTING_CB_POS = {
     {
@@ -52,7 +53,7 @@ function onListBtn(params)
         if (params.sender and settings) then
             local index = settings.index
 
-            if (params.name == "list_leftbutton_pressed") then
+            if (params.name == "setting_list_button_left") then
                 index = index - 1
                 if (not settings.cycle and index < 1) then return end
                 if (index < 1) then index = #(settings.options) end
@@ -206,6 +207,20 @@ function onItemSettingEnable(params)
     end
 end
 
+function onItemSettingDelete(params)
+    local id = params.widget:GetParent():GetName()
+    local split_string = {}
+    for w in id:gmatch('([^_]+)') do table.insert(split_string, w) end
+
+    if (id and UI_SETTINGS[id]) then
+        UI_SETTINGS[id].value = false
+        saveSettings()
+
+        UI.groupPop(split_string[1], split_string[2])
+        UI.render()
+    end
+end
+
 function onItemSettingCB(params)
     local id = params.widget:GetParent():GetName()
 
@@ -221,22 +236,25 @@ end
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 function UI.init(name)
-    common.RegisterReactionHandler(onCB, "checkbox_pressed")
-    common.RegisterReactionHandler(onListBtn, "list_leftbutton_pressed")
-    common.RegisterReactionHandler(onListBtn, "list_rightbutton_pressed")
-    common.RegisterReactionHandler(onInputChange, "RenameBuildReaction")
-    common.RegisterReactionHandler(onInputEsc, "RenameCancelReaction")
-    common.RegisterReactionHandler(onSliderChange, "slider_changed")
-    common.RegisterReactionHandler(onSettingButton, "setting_button_pressed")
+    common.RegisterReactionHandler(onCB, "setting_cb")
+    common.RegisterReactionHandler(onListBtn, "setting_list_button_left")
+    common.RegisterReactionHandler(onListBtn, "setting_list_button_right")
+    common.RegisterReactionHandler(onInputChange, "setting_input_change")
+    common.RegisterReactionHandler(onInputEsc, "setting_input_esc")
+    common.RegisterReactionHandler(onSliderChange, "setting_slider")
+    common.RegisterReactionHandler(onSettingButton, "setting_button")
     common.RegisterReactionHandler(onMainAccept, "main_accept_pressed")
     common.RegisterReactionHandler(onMainRestore, "main_restore_pressed")
     common.RegisterReactionHandler(onTabSwitch, "tab_pressed")
     common.RegisterReactionHandler(onItemSettingEnable, "setting_itemsetting_enable")
     common.RegisterReactionHandler(onItemSettingCB, "setting_itemsetting_cb")
-    common.RegisterReactionHandler(onSettingButtonInput, "setting_buttoninput_pressed")
+    common.RegisterReactionHandler(onSettingButtonInput, "setting_buttoninput")
+    common.RegisterReactionHandler(onItemSettingDelete, "setting_itemsetting_delete")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
+
+    if (not UI_SETTINGS.registeredTextures) then UI_SETTINGS.registeredTextures = {} end
 
     local frameHeader = SettingsMainFrame:GetChildChecked("WindowHeader", true)
     if (not name) then name = "Settings" end
@@ -245,6 +263,33 @@ function UI.init(name)
     frameHeader:SetTransparentInput(false)
     DnD.Init(SettingsMainFrame, frameHeader)
     DnD.Enable(SettingsMainFrame, false)
+
+    for k, v in pairs(UI_SETTINGS.registeredTextures) do
+        pushToChatSimple(k)
+    end
+end
+
+function shallowcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+function UI.registerTexture(key, texture)
+    UI_SETTINGS.registeredTextures[key] = {
+        texture = texture,
+        path = common.GetTexturePath( texture )
+    }
+
+    saveSettings()
 end
 
 function UI.save()
@@ -261,8 +306,12 @@ end
 
 function UI.toggle()
     local ui = mainForm:GetChildChecked("SettingsMain", false)
-	ui:Show(not ui:IsVisibleEx())
+    local show = not ui:IsVisibleEx()
+	ui:Show(show)
 	wtSetPlace(ui, {alignX=2, alignY=2})
+    if (show) then
+        UI.render()
+    end
 end
 
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -397,8 +446,24 @@ function UI.createItemSetting(name, label, options, enabled)
     return temp
 end
 
-function UI.groupPush(name, setting)
+function UI.loadUserSettings()
+    USER_SETTINGS = userMods.GetGlobalConfigSection("USER_SETTINGS") or {}
+    for group_name, list in pairs(USER_SETTINGS) do
+        if (#list > 0) then
+            for i, setting in pairs(list) do
+                UI.groupPush(group_name, setting, false)
+            end
+        end
+    end
+end
+
+function UI.groupPush(name, setting, user)
     if (SETTING_GROUPS[name]) then
+        if (user) then
+            if (not USER_SETTINGS[name]) then USER_SETTINGS[name] = {} end
+            table.insert(USER_SETTINGS[name], setting)
+            userMods.SetGlobalConfigSection("USER_SETTINGS", USER_SETTINGS)
+        end
         table.insert(SETTING_GROUPS[name].settings, setting)
     end
 end
@@ -407,8 +472,17 @@ function UI.groupPop(name, settingName)
     if (SETTING_GROUPS[name]) then
         for k, v in pairs(SETTING_GROUPS[name].settings) do
             if (v and v.name == settingName) then
-                table.remove(SETTING_GROUPS[name].settings, v)
+                table.remove(SETTING_GROUPS[name].settings, k)
             end
+        end
+
+        if (USER_SETTINGS[name]) then
+            for k, v in pairs(USER_SETTINGS[name]) do
+                if (v and v.name == settingName) then
+                    table.remove(USER_SETTINGS[name], k)
+                end
+            end
+            userMods.SetGlobalConfigSection("USER_SETTINGS", USER_SETTINGS)
         end
     end
 end
@@ -421,10 +495,10 @@ function UI.addGroup(name, label, settings)
     table.insert(SETTING_GROUPS_KEYS_ORDER, name)
 end
 
-function UI.removeGroup(name)
-    SETTING_GROUPS[name] = nil
-    table.remove(SETTING_GROUPS_KEYS_ORDER, name)
-end
+-- function UI.removeGroup(name)
+--     SETTING_GROUPS[name] = nil
+--     table.remove(SETTING_GROUPS_KEYS_ORDER, name)
+-- end
 
 function UI.setTabs(tabs, default)
     TABS = tabs
@@ -539,6 +613,15 @@ function UI.render()
                     groupFrame:AddChild(panel)
                     panel:SetName(id)
                     label:SetVal("text", v.label)
+
+                    local icon = panel:GetChildChecked("IconSpell", false)
+
+                    if (UI_SETTINGS.registeredTextures[v.label]) then
+                        pushToChatSimple(UI_SETTINGS.registeredTextures[v.label].texture)
+                        pushToChatSimple(UI_SETTINGS.registeredTextures[v.label].path)
+
+                        icon:SetBackgroundTexture(UI_SETTINGS.registeredTextures[v.label].texture)
+                    end
 
                     if (not UI_SETTINGS[id]) then
                         UI_SETTINGS[id] = { type = v.type, value = v.params.enabled, cb = {}}

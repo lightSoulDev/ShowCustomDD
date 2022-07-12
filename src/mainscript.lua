@@ -255,6 +255,8 @@ function onUnitDamage(e)
 				end
 			end
 		end
+		
+		if (params.icon) then UI.registerTexture(fromWS(e.ability), params.icon) end
 
 		if (e.lethal and Settings.colorClasses["LETHAL_NAME"]) then params.nameClass = Settings.colorClasses["LETHAL_NAME"] end
 		if (e.lethal and Settings.colorClasses["LETHAL_NUM"]) then params.amountClass = Settings.colorClasses["LETHAL_NUM"] end
@@ -475,7 +477,7 @@ function setUpTemplates()
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
 
-	UI_SETTINGS = {}
+	-- UI_SETTINGS = {}
 
 	UI.addGroup("PanelSettings", "Настройки панелей", {
 		UI.createInput("MaxBars", "Максимально количество панелей" , {
@@ -618,7 +620,6 @@ function setUpTemplates()
 		{
 			label = "Ignored",
 			buttons = {
-				left = { "Restore" },
 				right = { "Accept" }
 			},
 			groups = {
@@ -627,6 +628,7 @@ function setUpTemplates()
 		}
 	}, "Common")
 
+	UI.loadUserSettings()
 	UI.render()
 end
 
@@ -652,8 +654,8 @@ function addIgnoreCB(widget, settings, editline)
 	editline:SetFocus(false)
 	local text = editline:GetString()
 	pushToChatSimple(text)
-
-	UI.groupPush("IgnoredNames", {
+	
+	UI.groupPush("IgnoredNames",
 		UI.createItemSetting(text, text, {
 			iconName = text,
 			checkboxes = {
@@ -678,8 +680,10 @@ function addIgnoreCB(widget, settings, editline)
 					default = false
 				},
 			}
-		}, true),
-	})
+		}, true), true
+	)
+
+	UI.render()
 end
 
 if (avatar.IsExist()) then Init()

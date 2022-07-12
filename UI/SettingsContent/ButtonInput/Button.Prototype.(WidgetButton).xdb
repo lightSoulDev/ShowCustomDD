@@ -30,7 +30,7 @@
 				<LayerMain href="../Common/ButtonDisabled.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 				<FormatFileRef href="ButtonFormat.txt" />
 			</StateDisabled>
-			<Reaction>setting_buttoninput_pressed</Reaction>
+			<Reaction>setting_buttoninput</Reaction>
 			<ReactionOnUp>true</ReactionOnUp>
 			<ReactionOnPointing>button_over</ReactionOnPointing>
 		</Item>

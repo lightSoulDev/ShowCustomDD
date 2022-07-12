@@ -25,7 +25,7 @@
 			<StateDisabled>
 				<LayerMain href="Textures/LeftButtonDisabled.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 			</StateDisabled>
-			<Reaction>list_leftbutton_pressed</Reaction>
+			<Reaction>setting_list_button_left</Reaction>
 			<ReactionOnPointing>list_leftbutton_over</ReactionOnPointing>
 		</Item>
 	</Variants>
