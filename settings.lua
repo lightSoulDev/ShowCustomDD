@@ -21,15 +21,15 @@ Global("Settings", {
         bgColor = {r = 0.0, g = 0.0, b = 0.0, a = 0.5},
     -- Игнор по имени спелла
         ignoredNames = {
-            -- ['Возмездие'] = {
-            --     enabled = true,
-            --     filters = {
-            --         ['incP'] = true,
-            --         ['outP'] = true,
-            --         ['incU'] = true,
-            --         ['outU'] = true,
-            --     }
-            -- }
+            ['Летающий клинок'] = {
+                enabled = true,
+                filters = {
+                    ['incP'] = true,
+                    ['outP'] = true,
+                    ['incU'] = false,
+                    ['outU'] = false,
+                }
+            }
         },
     -- Показывает только указанные ниже скиллы
         showOnlySelected = false,

@@ -578,6 +578,51 @@ function setUpTemplates()
 		}, 0),
 	})
 
+	UI.addGroup("IgnoredNames", "Игнор по имени", {
+		UI.createButton("AddIgnore", "Новый фильтр по имени", {
+			width = 128,
+			states = {
+				'Добавить',
+			},
+			callback = addIgnoreCB
+		}, 1),
+		UI.createItemSetting("Voz", "Возмездие", {
+			iconName = "Возмездие",
+			checkboxes = {
+				{
+					name = "outP",
+					label = "Исх. И",
+					default = true
+				},
+				{
+					name = "incP",
+					label = "Вход. И",
+					default = false
+				},
+				{
+					name = "outU",
+					label = "Исх. М",
+					default = true
+				},
+				{
+					name = "incU",
+					label = "Вход. М",
+					default = false
+				},
+			}
+		}, true),
+		UI.createItemSetting("Anafema", "Анафема", {
+			iconName = "Анафема",
+			checkboxes = {
+				{
+					name = "outP",
+					label = "Исх. И",
+					default = true
+				}
+			}
+		}, true),
+	})
+
 	UI.setTabs({
 		{
 			label = "Common",
@@ -587,28 +632,31 @@ function setUpTemplates()
 			},
 			groups = {
 				"PanelSettings",
-				"Formatting"
-			}
-		},
-		{
-			label = "Filtering",
-			buttons = {
-				left = { "Restore" },
-				right = { "Accept" }
-			},
-			groups = {
+				"Formatting",
 				"DamageFilteringP",
-				"DamageFilteringU"
+				"DamageFilteringU",
 			}
 		},
 		{
-			label = "Backlayer",
+			label = "Visual",
 			buttons = {
 				left = { "Restore" },
 				right = { "Accept" }
 			},
 			groups = {
+				"NumColors",
+				"LabelColors",
 				"PanelBackground",
+			}
+		},
+		{
+			label = "Ignored",
+			buttons = {
+				left = { "Restore" },
+				right = { "Accept" }
+			},
+			groups = {
+				"IgnoredNames"
 			}
 		}
 	}, "Common")
@@ -632,6 +680,10 @@ function switchButtonState(widget, settings)
 
 	UI.save()
 	UI.print()
+end
+
+function addIgnoreCB(widget, settings)
+	pushToChatSimple("test")
 end
 
 if (avatar.IsExist()) then Init()

@@ -5,6 +5,25 @@ Global( "SETTING_GROUPS_KEYS_ORDER", {} )
 Global( "PANEL_WIDGETS", {} )
 Global( "TABS", {} )
 
+local ITEM_SETTING_CB_POS = {
+    {
+        alignX = 0, posX = 371, highPosX = 0,
+        alignY = 0, posY = 4, highPosY = 0,
+    },
+    {
+        alignX = 0, posX = 471, highPosX = 0,
+        alignY = 0, posY = 4, highPosY = 0,
+    },
+    {
+        alignX = 0, posX = 371, highPosX = 0,
+        alignY = 1, posY = 0, highPosY = 6,
+    },
+    {
+        alignX = 0, posX = 471, highPosX = 0,
+        alignY = 1, posY = 0, highPosY = 6,
+    },
+}
+
 local ACTIVE_BUTTONS = {}
 local CURRENT_TAB = nil
 local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
@@ -166,6 +185,26 @@ function onTabSwitch(params)
     end
 end
 
+function onItemSettingEnable(params)
+    local id = params.widget:GetParent():GetName()
+
+    if (id and UI_SETTINGS[id]) then
+        UI_SETTINGS[id].value = not UI_SETTINGS[id].value
+        params.widget:SetVariant(chVariant(UI_SETTINGS[id].value))
+        saveSettings()
+    end
+end
+
+function onItemSettingCB(params)
+    local id = params.widget:GetParent():GetName()
+
+    if (id and UI_SETTINGS[id] and UI_SETTINGS[id].cb[params.sender] ~= nil) then
+        UI_SETTINGS[id].cb[params.sender] = not UI_SETTINGS[id].cb[params.sender]
+        params.widget:SetVariant(chVariant(UI_SETTINGS[id].cb[params.sender]))
+        saveSettings()
+    end
+end
+
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- =-                   I N I T                   -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -181,6 +220,8 @@ function UI.init(name)
     common.RegisterReactionHandler(onMainAccept, "main_accept_pressed")
     common.RegisterReactionHandler(onMainRestore, "main_restore_pressed")
     common.RegisterReactionHandler(onTabSwitch, "tab_pressed")
+    common.RegisterReactionHandler(onItemSettingEnable, "setting_itemsetting_enable")
+    common.RegisterReactionHandler(onItemSettingCB, "setting_itemsetting_cb")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -298,6 +339,32 @@ function UI.createButton(name, label, options, default)
     return temp
 end
 
+-- name - string
+-- label - string
+-- options - {
+--  iconName, checkboxes = { { name, label, default }} 
+-- }
+function UI.createItemSetting(name, label, options, enabled)
+
+    local temp = { name = name, label = label, type = "ItemSetting", params = {
+        options = {},
+        iconName = options.iconName or "_Placeholder_",
+        enabled = enabled
+    }}
+
+    for k, v in pairs(options.checkboxes) do
+        local cb = {
+            name = v.name,
+            label = v.label,
+            value = v.default
+        }
+
+        table.insert(temp.params.options, cb)
+    end
+
+    return temp
+end
+
 function UI.addGroup(name, label, settings)
     SETTING_GROUPS[name] = {
         label = label,
@@ -383,6 +450,7 @@ function UI.render()
         local settings = group.settings
         local grouplabel = group.label
         local frameH = ((#settings) * 45) + 30
+        local extraPadding = 0
 
         local groupFrame = CreateWG("BackFrame", "BG", mainForm, true, { alignX=3, posX = 0, highPosX = 0, alignY = 0, sizeY=frameH })
         groupFrame:Show(true)
@@ -398,7 +466,7 @@ function UI.render()
                 -- =-               C H E C K B O X               -=
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 if (v.type == "Checkbox") then
-                    local panel = CreateWG("CheckboxPanel", "CheckboxPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local panel = CreateWG("CheckboxPanel", "CheckboxPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local button = panel:GetChildChecked("Checkbox", false)
                     local label = panel:GetChildChecked("CheckboxPanelText", false)
                     groupFrame:AddChild(panel)
@@ -412,10 +480,60 @@ function UI.render()
 
                     button:SetVariant(chVariant(UI_SETTINGS[id].value))
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-           I T E M S E T T I N G S           -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                elseif (v.type == "ItemSetting") then
+                    local panel = CreateWG("ItemSettingPanel", "ItemSettingPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
+                    local enable = panel:GetChildChecked("EnableCheckbox", false)
+                    local label = panel:GetChildChecked("ItemSettingPanelText", false)
+                    extraPadding = extraPadding + 22
+                    wtSetPlace(groupFrame, { sizeY = frameH + extraPadding})
+                    groupFrame:AddChild(panel)
+                    panel:SetName(id)
+                    label:SetVal("text", v.label)
+
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = { type = v.type, value = v.params.enabled, cb = {}}
+                    end
+
+                    for i = 1, 4, 1 do
+                        local option = v.params.options[i]
+                        local cb = panel:GetChildChecked("CB_"..tostring(i), false)
+                        local label = panel:GetChildChecked("Text_"..tostring(i), false)
+
+                        if (cb and option) then
+                            label:SetVal("text", option.label)
+                            cb:SetName(option.name)
+                            cb:Show(true)
+
+                            if (#(v.params.options) == 2) then
+                                wtSetPlace(cb, { alignY = 2, posY = 2, highPosY = 0 })
+                                wtSetPlace(label, { alignY = 2, posY = 2, highPosY = 0 })
+                            elseif (#(v.params.options) == 1) then
+                                local tmp = ITEM_SETTING_CB_POS[2]
+                                wtSetPlace(cb, { alignY = 2, posY = 2, highPosY = 0, posX = tmp.posX })
+                                wtSetPlace(label, { alignY = 2, posY = 2, highPosY = 0, posX = tmp.posX + 31 })
+                            else
+                                local tmp = ITEM_SETTING_CB_POS[i]
+                                wtSetPlace(cb, tmp)
+                                wtSetPlace(label, tmp)
+                                wtSetPlace(label, { posX = tmp.posX + 31 })
+                            end
+                            
+                            if (UI_SETTINGS[id].cb[option.name] == nil) then
+                                UI_SETTINGS[id].cb[option.name] = option.value
+                            end
+
+                            cb:SetVariant(chVariant(UI_SETTINGS[id].cb[option.name]))
+                        end
+                    end
+
+                    enable:SetVariant(chVariant(UI_SETTINGS[id].value))
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 -- =-                 B U T T O N                 -=
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "Button") then
-                    local panel = CreateWG("ButtonPanel", "ButtonPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local panel = CreateWG("ButtonPanel", "ButtonPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local button = panel:GetChildChecked("Button", true)
                     local label = panel:GetChildChecked("ButtonPanelText", false)
                     groupFrame:AddChild(panel)
@@ -441,7 +559,7 @@ function UI.render()
                 -- =-                   L I S T                   -=
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "List") then
-                    local panel = CreateWG("ListPanel", "ListPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local panel = CreateWG("ListPanel", "ListPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local label = panel:GetChildChecked("ListPanelText", false)
                     local valueLabel = panel:GetChildChecked("ListPanelDescText", true)
                     local lBtn = panel:GetChildChecked("ListPanelButtonLeft", true)
@@ -475,7 +593,7 @@ function UI.render()
                 -- =-                 S L I D E R                 -=
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "Slider") then
-                    local panel = CreateWG("SliderPanel", "SliderPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local panel = CreateWG("SliderPanel", "SliderPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local label = panel:GetChildChecked("SliderPanelText", false)
                     local discreteSlider = panel:GetChildChecked("DiscreteSlider", true)
                     local barPanel = panel:GetChildChecked("SliderPanelBar", true)
@@ -498,7 +616,7 @@ function UI.render()
                 -- =-                  I N P U T                  -=
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 elseif (v.type == "Input") then
-                    local panel = CreateWG("InputPanel", "InputPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45, highPosX = 0, alignY = 0 })
+                    local panel = CreateWG("InputPanel", "InputPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local label = panel:GetChildChecked("InputPanelText", false):SetVal("text", v.label)
                     groupFrame:AddChild(panel)
 
