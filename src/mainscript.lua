@@ -218,10 +218,12 @@ function onUnitDamage(e)
 		if (filters and filters[category]) then return end
 	end
 
+	local shelf_val = {
+
+	}
+
 	if (stack) then
-		if (e.spellId) then
-			params.icon = spellLib.GetIcon(e.spellId)
-		elseif (e.buffId) then
+		if (e.buffId) then
 			local info = object.GetBuffInfo( e.buffId ) or avatar.GetBuffInfo(e.buffId)
 
 			if (info) then
@@ -230,13 +232,22 @@ function onUnitDamage(e)
 				elseif (info.producer and info.producer.spellId) then
 					params.icon = spellLib.GetIcon(info.producer.spellId)
 				end
+				shelf_val.buffId = object.GetBuffInfo(e.buffId).buffId
 			end
-		elseif (e.abilityId) then
+		end
+		if (not params.icon and e.spellId) then
+			params.icon = spellLib.GetIcon(e.spellId)
+			shelf_val.spellId = e.spellId
+		end
+		if (not params.icon and e.abilityId) then
 			local info = avatar.GetAbilityInfo( e.abilityId )
-			if (info and info.texture) then params.icon = texture end
-		elseif (e.mapModifierId) then
+			if (info and info.texture) then params.icon = info.texture end
+			shelf_val.abilityId = e.abilityId
+		end
+		if (not params.icon and e.mapModifierId) then
 			local info = cartographer.GetMapModifierInfo( e.mapModifierId )
 			if (info and info.image) then params.icon = info.image end
+			shelf_val.mapModifierId = e.mapModifierId
 		end
 
 		if (e.isFall) then
@@ -256,7 +267,7 @@ function onUnitDamage(e)
 			end
 		end
 		
-		if (params.icon) then UI.registerTexture(fromWS(e.ability), params.icon) end
+		if (params.icon) then UI.registerTexture(fromWS(e.ability), shelf_val) end
 
 		if (e.lethal and Settings.colorClasses["LETHAL_NAME"]) then params.nameClass = Settings.colorClasses["LETHAL_NAME"] end
 		if (e.lethal and Settings.colorClasses["LETHAL_NUM"]) then params.amountClass = Settings.colorClasses["LETHAL_NUM"] end
@@ -377,6 +388,8 @@ function onSlash(p)
 	elseif(split_string[1]:lower() == "/ddsettings") then
 		UI.print()
 	end
+
+	Shelf.print()
 end
 
 function ToggleDnd()
@@ -476,8 +489,6 @@ function setUpTemplates()
 	DnD.Init(out_template, out_template:GetChildChecked("IconSpell", true), true)
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
-
-	-- UI_SETTINGS = {}
 
 	UI.addGroup("PanelSettings", "Настройки панелей", {
 		UI.createInput("MaxBars", "Максимально количество панелей" , {

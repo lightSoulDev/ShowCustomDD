@@ -265,7 +265,7 @@ function UI.init(name)
     DnD.Enable(SettingsMainFrame, false)
 
     for k, v in pairs(UI_SETTINGS.registeredTextures) do
-        pushToChatSimple(k)
+        pushToChatSimple(k.."spell: "..tostring(v.spellId).." buff: "..tostring(v.buffId))
     end
 end
 
@@ -283,10 +283,13 @@ function shallowcopy(orig)
     return copy
 end
 
-function UI.registerTexture(key, texture)
+function UI.registerTexture(key, obj)
     UI_SETTINGS.registeredTextures[key] = {
-        texture = texture,
-        path = common.GetTexturePath( texture )
+        obj = obj,
+		spellId = obj.spellId,
+		buffId = obj.buffId,
+		abilityId = obj.abilityId,
+		mapModifierId = obj.mapModifierId
     }
 
     saveSettings()
@@ -525,6 +528,33 @@ function UI.setTabs(tabs, default)
     i = nil
 end
 
+function getConfigIcon(e)
+    local icon
+    if (e.buffId) then
+        local info = object.GetBuffInfo( e.buffId ) or avatar.GetBuffInfo(e.buffId)
+        if (info) then
+            if (info.texture) then
+                icon = info.texture
+            elseif (info.producer and info.producer.spellId) then
+                icon = spellLib.GetIcon(info.producer.spellId)
+            end
+        end
+    end
+    if (not icon and e.spellId) then
+        icon = spellLib.GetIcon(e.spellId)
+    end
+    if (not icon and e.abilityId) then
+        local info = avatar.GetAbilityInfo( e.abilityId )
+        if (info and info.texture) then icon = info.texture end
+    end
+    if (not icon and e.mapModifierId) then
+        local info = cartographer.GetMapModifierInfo( e.mapModifierId )
+        if (info and info.image) then icon = info.image end
+    end
+
+    return icon
+end
+
 function UI.render()
 
     local scrollCont = mainForm:GetChildChecked("OptionsContainer", true)
@@ -617,10 +647,11 @@ function UI.render()
                     local icon = panel:GetChildChecked("IconSpell", false)
 
                     if (UI_SETTINGS.registeredTextures[v.label]) then
-                        pushToChatSimple(UI_SETTINGS.registeredTextures[v.label].texture)
-                        pushToChatSimple(UI_SETTINGS.registeredTextures[v.label].path)
+                        local texture = getConfigIcon(UI_SETTINGS.registeredTextures[v.label])
 
-                        icon:SetBackgroundTexture(UI_SETTINGS.registeredTextures[v.label].texture)
+                        if (icon) then
+                            icon:SetBackgroundTexture(texture)
+                        end
                     end
 
                     if (not UI_SETTINGS[id]) then
@@ -802,35 +833,35 @@ function UI.render()
     end
 end
 
-	-- UI.addGroup("ShowDD", "Отображение урона", {
-	-- 	UI.createCheckBox("shorten", "Сокращать цифры урона", true),
-	-- 	UI.createList("maxBars", "Количество панелей", {
+	-- UI.addGroup("ShowDD", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ", {
+	-- 	UI.createCheckBox("shorten", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ", true),
+	-- 	UI.createList("maxBars", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", {
 	-- 		2, 3, 4, 5, 6, 7, 8, 9, 10
 	-- 	}, 1),
-	-- 	UI.createList("colors", "Цвета", {
+	-- 	UI.createList("colors", "пїЅпїЅпїЅпїЅпїЅ", {
 	-- 		"ColorWhite", "ColorGreen", "ColorRed", "ColorBlue", "ColorOrange", "ColorYellow", "ColorBlack", "ColorMagenta", "ColorCian"
 	-- 	}, 1),
-	-- 	UI.createInput("testInput", "Пример инпута" , {
+	-- 	UI.createInput("testInput", "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ" , {
 	-- 		maxChars = 10,
 	-- 	}, 'test'),
-	-- 	UI.createInput("testInput2", "Пример инпута NUM" , {
+	-- 	UI.createInput("testInput2", "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ NUM" , {
 	-- 		maxChars = 10,
 	-- 		filter = "_NUM"
 	-- 	}, 'test'),
-	-- 	UI.createInput("testInput3", "Пример инпута INT" , {
+	-- 	UI.createInput("testInput3", "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ INT" , {
 	-- 		maxChars = 10,
 	-- 		filter = "_INT"
 	-- 	}, '100'),
-	-- 	UI.createSlider("redColor", "Пример слайдера", {
+	-- 	UI.createSlider("redColor", "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", {
 	-- 		stepsCount = 255,
 	-- 		width = 212,
 	-- 	}, 0),
-	-- 	UI.createButton("testButton", "Пример кнопки", {
+	-- 	UI.createButton("testButton", "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ", {
 	-- 		width = 128,
 	-- 		states = {
-	-- 			'Стейт 1',
-	-- 			'Стейт 2',
-	-- 			'Стейт 3',
+	-- 			'пїЅпїЅпїЅпїЅпїЅ 1',
+	-- 			'пїЅпїЅпїЅпїЅпїЅ 2',
+	-- 			'пїЅпїЅпїЅпїЅпїЅ 3',
 	-- 		},
 	-- 		callback = switchButtonState
 	-- 	}, 2)
