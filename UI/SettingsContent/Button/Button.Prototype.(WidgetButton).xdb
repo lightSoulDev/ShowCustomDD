@@ -18,7 +18,7 @@
 		<Item>
 			<TextFileRef href="" />
 			<LayerHighlight href="../Common/ButtonHighlighted.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
-			<PushedOffset x="-2" y="2" />
+			<PushedOffset x="-1" y="1" />
 			<StateNormal>
 				<LayerMain href="../Common/ButtonNormal.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
 				<FormatFileRef href="ButtonFormat.txt" />

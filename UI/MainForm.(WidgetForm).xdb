@@ -8,6 +8,7 @@
 		<Item href="SettingsContent/Input/InputPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/Slider/SliderPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/Button/ButtonPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
+		<Item href="SettingsContent/ButtonInput/ButtonInputPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/ItemSetting/ItemSettingPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 
 

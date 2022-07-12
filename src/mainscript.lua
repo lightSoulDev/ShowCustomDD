@@ -579,48 +579,14 @@ function setUpTemplates()
 	})
 
 	UI.addGroup("IgnoredNames", "Игнор по имени", {
-		UI.createButton("AddIgnore", "Новый фильтр по имени", {
-			width = 128,
+		UI.createCheckBox("EnableIgnore", "Включить фильтр по имени", false),
+		UI.createButtonInput("AddIgnore", "Новый фильтр по имени", {
+			width = 90,
 			states = {
 				'Добавить',
 			},
 			callback = addIgnoreCB
 		}, 1),
-		UI.createItemSetting("Voz", "Возмездие", {
-			iconName = "Возмездие",
-			checkboxes = {
-				{
-					name = "outP",
-					label = "Исх. И",
-					default = true
-				},
-				{
-					name = "incP",
-					label = "Вход. И",
-					default = false
-				},
-				{
-					name = "outU",
-					label = "Исх. М",
-					default = true
-				},
-				{
-					name = "incU",
-					label = "Вход. М",
-					default = false
-				},
-			}
-		}, true),
-		UI.createItemSetting("Anafema", "Анафема", {
-			iconName = "Анафема",
-			checkboxes = {
-				{
-					name = "outP",
-					label = "Исх. И",
-					default = true
-				}
-			}
-		}, true),
 	})
 
 	UI.setTabs({
@@ -682,8 +648,38 @@ function switchButtonState(widget, settings)
 	UI.print()
 end
 
-function addIgnoreCB(widget, settings)
-	pushToChatSimple("test")
+function addIgnoreCB(widget, settings, editline)
+	editline:SetFocus(false)
+	local text = editline:GetString()
+	pushToChatSimple(text)
+
+	UI.groupPush("IgnoredNames", {
+		UI.createItemSetting(text, text, {
+			iconName = text,
+			checkboxes = {
+				{
+					name = "outP",
+					label = "Исх. И",
+					default = false
+				},
+				{
+					name = "incP",
+					label = "Вход. И",
+					default = false
+				},
+				{
+					name = "outU",
+					label = "Исх. М",
+					default = false
+				},
+				{
+					name = "incU",
+					label = "Вход. М",
+					default = false
+				},
+			}
+		}, true),
+	})
 end
 
 if (avatar.IsExist()) then Init()

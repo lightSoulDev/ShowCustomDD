@@ -102,9 +102,10 @@ function onInputChange(params)
         end
 
         UI_SETTINGS[params.sender].value = tempVal
-        params.widget:SetFocus(false)
         saveSettings()
     end
+
+    params.widget:SetFocus(false)
 end
 
 function onInputEsc(params)
@@ -131,6 +132,16 @@ function onSettingButton(params)
         local cb = UI_SETTINGS[params.sender].callback
         if (cb and type(cb) == "function") then
             cb(params.widget, UI_SETTINGS[params.sender])
+        end
+    end
+end
+
+function onSettingButtonInput(params)
+    if (params.sender and UI_SETTINGS[params.sender]) then
+        local cb = UI_SETTINGS[params.sender].callback
+        local editline = params.widget:GetParent():GetChildChecked("EditLine", true)
+        if (cb and type(cb) == "function") then
+            cb(params.widget, UI_SETTINGS[params.sender], editline)
         end
     end
 end
@@ -222,6 +233,7 @@ function UI.init(name)
     common.RegisterReactionHandler(onTabSwitch, "tab_pressed")
     common.RegisterReactionHandler(onItemSettingEnable, "setting_itemsetting_enable")
     common.RegisterReactionHandler(onItemSettingCB, "setting_itemsetting_cb")
+    common.RegisterReactionHandler(onSettingButtonInput, "setting_buttoninput_pressed")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -319,6 +331,26 @@ function UI.createInput(name, label, options, default)
     return temp
 end
 
+function UI.createButtonInput(name, label, options, default)
+
+    local temp = { name = name, label = label, btnLabel = btnLabel, type = "ButtonInput", params = {
+        callback = options.callback,
+        states = options.states,
+        options = {
+            width = options.width or 100,
+        },
+    }}
+
+    if (default == nil or default < 1) then default = 1 end
+    if (default > #(options.states)) then default = #(options.states) end
+
+    temp.params.value = options.states[default]
+    temp.params.defaultState = default
+    temp.params.state = default
+
+    return temp
+end
+
 function UI.createButton(name, label, options, default)
 
     local temp = { name = name, label = label, btnLabel = btnLabel, type = "Button", params = {
@@ -363,6 +395,22 @@ function UI.createItemSetting(name, label, options, enabled)
     end
 
     return temp
+end
+
+function UI.groupPush(name, setting)
+    if (SETTING_GROUPS[name]) then
+        table.insert(SETTING_GROUPS[name].settings, setting)
+    end
+end
+
+function UI.groupPop(name, settingName)
+    if (SETTING_GROUPS[name]) then
+        for k, v in pairs(SETTING_GROUPS[name].settings) do
+            if (v and v.name == settingName) then
+                table.remove(SETTING_GROUPS[name].settings, v)
+            end
+        end
+    end
 end
 
 function UI.addGroup(name, label, settings)
@@ -536,6 +584,33 @@ function UI.render()
                     local panel = CreateWG("ButtonPanel", "ButtonPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local button = panel:GetChildChecked("Button", true)
                     local label = panel:GetChildChecked("ButtonPanelText", false)
+                    groupFrame:AddChild(panel)
+
+                    label:SetVal("text", v.label)
+                    button:SetName(id)
+                    wtSetPlace(button, { sizeX = v.params.options.width })
+
+                    if (not UI_SETTINGS[id]) then
+                        UI_SETTINGS[id] = {
+                            type = v.type, 
+                            value = v.params.value,
+                            defaultState = v.params.defaultState,
+                            callback = v.params.callback,
+                            states = v.params.states,
+                            state = v.params.state
+                        }
+                    end
+
+                    button:SetVal("label", toWS(UI_SETTINGS[id].value))
+                    UI_SETTINGS[id].callback = v.params.callback
+
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                -- =-                 B U T T O N                 -=
+                -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                elseif (v.type == "ButtonInput") then
+                    local panel = CreateWG("ButtonInputPanel", "ButtonInputPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
+                    local button = panel:GetChildChecked("Button", true)
+                    local label = panel:GetChildChecked("ButtonInputPanelText", false)
                     groupFrame:AddChild(panel)
 
                     label:SetVal("text", v.label)
