@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <UIAddon>
-	<Name>ShowDD_Fetish</Name>
+	<Name>ShowCustomDD</Name>
 	<AutoStart>true</AutoStart>
 	<ScriptFileRefs>
 		<Item href="src/UI/locale.lua"/>
@@ -16,7 +16,7 @@
 			<Form href="UI/MainForm.(WidgetForm).xdb"/>
 		</Item>
 	</Forms>
-<addon_name>ShowDD_Fetish</addon_name>
+<addon_name>ShowCustomDD</addon_name>
 <localizedNameFileRef href="info/name.txt"/>
 <localizedDescFileRef href="info/desc.txt"/>
 <texturesGroups>

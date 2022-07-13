@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetForm>
-	<Name>ShowDD_Fetish</Name>
+	<Name>ShowCustomDD</Name>
 	<Priority>10000</Priority>
 	<Children>
 		<Item href="SettingsContent/Checkbox/CheckboxPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
