@@ -241,6 +241,8 @@ Global("COLOR_CLASSES", {
     ["Junk"] = true,
 })
 
+Global("LANG", "rus")
+
 function toWS( arg )
 	return userMods.ToWString(arg)
 end
@@ -420,4 +422,24 @@ function classListAll(canBeNil)
 	end
 
 	return tmp
+end
+
+function getGroupTexture(group, name)
+	local g = common.GetAddonRelatedTextureGroup( group )
+
+	if g then
+		return g:GetTexture(name)
+	end
+end
+
+function getLocaleText(name)
+    local lang = LANG or "rus"
+
+	local l = LOCALES[lang]
+
+	if l then
+		return l[name] or name
+    else
+        return name
+	end
 end

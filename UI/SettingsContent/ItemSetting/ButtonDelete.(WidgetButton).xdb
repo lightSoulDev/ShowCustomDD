@@ -25,7 +25,6 @@
 	</Placement>
 	<Variants>
 		<Item>
-			<TextFileRef href="ButtonDelete.txt" />
 			<Reaction>setting_itemsetting_delete</Reaction>
 		</Item>
 	</Variants>

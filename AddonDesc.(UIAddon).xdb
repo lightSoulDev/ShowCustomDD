@@ -3,11 +3,9 @@
 	<Name>ShowDD_Fetish</Name>
 	<AutoStart>true</AutoStart>
 	<ScriptFileRefs>
+		<Item href="locale.lua"/>
 		<Item href="src/LibDnD.lua"/>
 		<Item href="src/utils.lua"/>
-		<Item href="src/AVL/avl.lua"/>
-		<Item href="src/AVL/avl_WStr.lua"/>
-		<Item href="src/shelf.lua"/>
 		<Item href="settings.lua"/>
 		<Item href="src/settingsUI.lua"/>
 		<Item href="src/mainscript.lua"/>

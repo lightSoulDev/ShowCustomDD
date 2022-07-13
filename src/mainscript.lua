@@ -388,8 +388,6 @@ function onSlash(p)
 	elseif(split_string[1]:lower() == "/ddsettings") then
 		UI.print()
 	end
-
-	Shelf.print()
 end
 
 function ToggleDnd()
@@ -423,7 +421,9 @@ function onCfgRight()
 end
 
 function Init()
+	LANG = common.GetLocalization() or "rus"
 	UI.init("ShowDD")
+
 	common.RegisterEventHandler(onUnitDamage, 'EVENT_UNIT_DAMAGE_RECEIVED')
 	common.RegisterEventHandler(onUnitHeal, 'EVENT_HEALING_RECEIVED')
 
@@ -490,113 +490,113 @@ function setUpTemplates()
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
 
-	UI.addGroup("PanelSettings", "Настройки панелей", {
-		UI.createInput("MaxBars", "Максимально количество панелей" , {
+	UI.addGroup("PanelSettings", {
+		UI.createInput("MaxBars", {
 			maxChars = 3,
 			filter = "_INT"
 		}, '7'),
-		UI.createList("IconSize", "Размер иконки", range(16, 128, 4), 4, false),
-		UI.createList("IconPadding", "Отступ вокруг иконки", range(0, 6, 1), 1, false),
-		UI.createList("TextPadding", "Отступ текста от иконки", range(0, 10, 1), 2, false),
-		UI.createInput("ShowTime", "Время жизни панели (мс)" , {
+		UI.createList("IconSize", range(16, 128, 4), 4, false),
+		UI.createList("IconPadding", range(0, 6, 1), 1, false),
+		UI.createList("TextPadding", range(0, 10, 1), 2, false),
+		UI.createInput("ShowTime", {
 			maxChars = 6,
 			filter = "_INT"
 		}, '8000'),
 	})
 
-	UI.addGroup("Formatting", "Форматирование", {
-		UI.createCheckBox("ShortNum", "Сокращать цифры урона", true),
-		UI.createCheckBox("ShortenToMill", "Сокращать до миллиона", true),
-		UI.createList("FloatFormat", "Количество символов после запятой", range(0, 5, 1), 2, false),
+	UI.addGroup("Formatting", {
+		UI.createCheckBox("ShortNum", true),
+		UI.createCheckBox("ShortenToMill", true),
+		UI.createList("FloatFormat", range(0, 5, 1), 2, false),
 
-		UI.createCheckBox("ReplaceByName", "Отображать имя юнита вместо названия", false),
-		UI.createCheckBox("IgnoreBloodlust", "Игнор кровожадности и прочего нерунического хила (в бою)", true),
-		UI.createCheckBox("HideOutMisses", "Скрывать исходящие промахи", true),
-		UI.createCheckBox("HideIncMisses", "Скрывать входящие промахи", true),
+		UI.createCheckBox("ReplaceByName", false),
+		UI.createCheckBox("IgnoreBloodlust", true),
+		UI.createCheckBox("HideOutMisses", true),
+		UI.createCheckBox("HideIncMisses", true),
 	})
 
-	UI.addGroup("NumColors", "Цвета значений", {
-		UI.createList("DMG_NUM", "Обычный урон", classListAll(), 2, true),
-		UI.createList("CRIT_DMG_NUM", "Критический урон", classListAll(), 3, true),
-		UI.createList("HEAL_NUM", "Обычный хил", classListAll(), 4, true),
-		UI.createList("CRIT_HEAL_NUM", "Критический. урон", classListAll(), 5, true),
-		UI.createList("MISS_NUM", "Уклонение", classListAll(), 6, true),
-		UI.createList("LETHAL_NUM", "Летальный урон", classListAll(true), 0, true),
+	UI.addGroup("NumColors", {
+		UI.createList("DMG_NUM", classListAll(), 2, true),
+		UI.createList("CRIT_DMG_NUM", classListAll(), 3, true),
+		UI.createList("HEAL_NUM", classListAll(), 4, true),
+		UI.createList("CRIT_HEAL_NUM", classListAll(), 5, true),
+		UI.createList("MISS_NUM", classListAll(), 6, true),
+		UI.createList("LETHAL_NUM", classListAll(true), 0, true),
 	})
 
-	UI.addGroup("LabelColors", "Цвета подписей", {
-		UI.createList("DMG_NAME", "Обыч. урон", classListAll(), 1, true),
-		UI.createList("CRIT_DMG_NAME", "Крит. урон", classListAll(), 1, true),
-		UI.createList("HEAL_NAME", "Обыч. хил", classListAll(), 1, true),
-		UI.createList("CRIT_HEAL_NAME", "Крит. урон", classListAll(), 1, true),
-		UI.createList("MISS_NAME", "Уклонение", classListAll(), 1, true),
-		UI.createList("LETHAL_NAME", "Летальный урон", classListAll(true), 15, true),
+	UI.addGroup("LabelColors", {
+		UI.createList("DMG_NAME", classListAll(), 1, true),
+		UI.createList("CRIT_DMG_NAME", classListAll(), 1, true),
+		UI.createList("HEAL_NAME", classListAll(), 1, true),
+		UI.createList("CRIT_HEAL_NAME", classListAll(), 1, true),
+		UI.createList("MISS_NAME", classListAll(), 1, true),
+		UI.createList("LETHAL_NAME", classListAll(true), 15, true),
 	})
 
-	UI.addGroup("DamageFilteringP", "Фильтрация [Игроки]", {
-		UI.createInput("MinOutPlayerDmg", "Минимальное отображение исходящего урона" , {
+	UI.addGroup("DamageFilteringP", {
+		UI.createInput("MinOutPlayerDmg", {
 			maxChars = 10,
 			filter = "_INT"
 		}, '10000'),
-		UI.createInput("MinOutPlayerHeal", "Минимальное отображение исходящего лечения" , {
+		UI.createInput("MinOutPlayerHeal", {
 			maxChars = 10,
 			filter = "_INT"
 		}, '10000'),
-		UI.createInput("MinIncPlayerDmg", "Минимальное отображение входящего урона" , {
+		UI.createInput("MinIncPlayerDmg", {
 			maxChars = 10,
 			filter = "_INT"
 		}, '1000'),
-		UI.createInput("MinIncPlayerHeal", "Минимальное отображение входящего лечения" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '1000'),
-	})
-
-	UI.addGroup("DamageFilteringU", "Фильтрация [Мобы]", {
-		UI.createInput("MinOutUnitDmg", "Минимальное отображение исходящего урона" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '10000'),
-		UI.createInput("MinOutUnitHeal", "Минимальное отображение исходящего лечения" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '10000'),
-		UI.createInput("MinIncUnitDmg", "Минимальное отображение входящего урона" , {
-			maxChars = 10,
-			filter = "_INT"
-		}, '1000'),
-		UI.createInput("MinIncUnitHeal", "Минимальное отображение входящего лечения" , {
+		UI.createInput("MinIncPlayerHeal", {
 			maxChars = 10,
 			filter = "_INT"
 		}, '1000'),
 	})
 
-	UI.addGroup("PanelBackground", "Подложка", {
-		UI.createCheckBox("ShowBg", "Отображение подложки", false),
-		UI.createSlider("r", "Красный канал", {
+	UI.addGroup("DamageFilteringU", {
+		UI.createInput("MinOutUnitDmg", {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinOutUnitHeal", {
+			maxChars = 10,
+			filter = "_INT"
+		}, '10000'),
+		UI.createInput("MinIncUnitDmg", {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+		UI.createInput("MinIncUnitHeal", {
+			maxChars = 10,
+			filter = "_INT"
+		}, '1000'),
+	})
+
+	UI.addGroup("PanelBackground", {
+		UI.createCheckBox("ShowBg", false),
+		UI.createSlider("r", {
 			stepsCount = 255,
 			width = 212,
 		}, 0),
-		UI.createSlider("g", "Зеленый канал", {
+		UI.createSlider("g", {
 			stepsCount = 255,
 			width = 212,
 		}, 0),
-		UI.createSlider("b", "Синий канал", {
+		UI.createSlider("b", {
 			stepsCount = 255,
 			width = 212,
 		}, 0),
-		UI.createSlider("a", "Альфа канал", {
+		UI.createSlider("a", {
 			stepsCount = 255,
 			width = 212,
 		}, 0),
 	})
 
-	UI.addGroup("IgnoredNames", "Игнор по имени", {
-		UI.createCheckBox("EnableIgnore", "Включить фильтр по имени", false),
-		UI.createButtonInput("AddIgnore", "Новый фильтр по имени", {
+	UI.addGroup("IgnoredNames", {
+		UI.createCheckBox("EnableIgnore", false),
+		UI.createButtonInput("AddIgnore", {
 			width = 90,
 			states = {
-				'Добавить',
+				"ButtonAdd",
 			},
 			callback = addIgnoreCB
 		}, 1),
@@ -664,30 +664,29 @@ end
 function addIgnoreCB(widget, settings, editline)
 	editline:SetFocus(false)
 	local text = editline:GetString()
-	pushToChatSimple(text)
 	
 	UI.groupPush("IgnoredNames",
-		UI.createItemSetting(text, text, {
+		UI.createItemSetting(text, {
 			iconName = text,
 			checkboxes = {
 				{
 					name = "outP",
-					label = "Исх. И",
+					label = "CB_outP",
 					default = false
 				},
 				{
 					name = "incP",
-					label = "Вход. И",
+					label = "CB_incP",
 					default = false
 				},
 				{
 					name = "outU",
-					label = "Исх. М",
+					label = "CB_outU",
 					default = false
 				},
 				{
 					name = "incU",
-					label = "Вход. М",
+					label = "CB_incU",
 					default = false
 				},
 			}

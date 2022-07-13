@@ -321,7 +321,9 @@ end
 -- =-          U I   G E N E R A T O R S          -=
 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-function UI.createCheckBox(name, label, default)
+function UI.createCheckBox(name, default)
+    local label = getLocaleText("SETTING_"..name)
+
     local temp = { name = name, label = label, type = "Checkbox", params = {}}
 
     if (default == nil) then default = false end
@@ -332,7 +334,9 @@ function UI.createCheckBox(name, label, default)
     return temp
 end
 
-function UI.createList(name, label, options, default, cycle)
+function UI.createList(name, options, default, cycle)
+    local label = getLocaleText("SETTING_"..name)
+
     local temp = { name = name, label = label, type = "List", params = {
         options = options,
     }}
@@ -348,7 +352,8 @@ function UI.createList(name, label, options, default, cycle)
     return temp
 end
 
-function UI.createSlider(name, label, options, default)
+function UI.createSlider(name, options, default)
+    local label = getLocaleText("SETTING_"..name)
     local temp = { name = name, label = label, type = "Slider", params = {
         options = {
             stepsCount = options.stepsCount or 10,
@@ -365,7 +370,8 @@ function UI.createSlider(name, label, options, default)
     return temp
 end
 
-function UI.createInput(name, label, options, default)
+function UI.createInput(name, options, default)
+    local label = getLocaleText("SETTING_"..name)
     local temp = { name = name, label = label, type = "Input", params = {
         options = {
             isPassword = options.isPassword or false,
@@ -383,7 +389,8 @@ function UI.createInput(name, label, options, default)
     return temp
 end
 
-function UI.createButtonInput(name, label, options, default)
+function UI.createButtonInput(name, options, default)
+    local label = getLocaleText("SETTING_"..name)
 
     local temp = { name = name, label = label, btnLabel = btnLabel, type = "ButtonInput", params = {
         callback = options.callback,
@@ -403,7 +410,8 @@ function UI.createButtonInput(name, label, options, default)
     return temp
 end
 
-function UI.createButton(name, label, options, default)
+function UI.createButton(name, options, default)
+    local label = getLocaleText("SETTING_"..name)
 
     local temp = { name = name, label = label, btnLabel = btnLabel, type = "Button", params = {
         callback = options.callback,
@@ -428,7 +436,8 @@ end
 -- options - {
 --  iconName, checkboxes = { { name, label, default }} 
 -- }
-function UI.createItemSetting(name, label, options, enabled)
+function UI.createItemSetting(name, options, enabled)
+    local label = name
 
     local temp = { name = name, label = label, type = "ItemSetting", params = {
         options = {},
@@ -439,7 +448,7 @@ function UI.createItemSetting(name, label, options, enabled)
     for k, v in pairs(options.checkboxes) do
         local cb = {
             name = v.name,
-            label = v.label,
+            label = getLocaleText(v.label),
             value = v.default
         }
 
@@ -490,7 +499,9 @@ function UI.groupPop(name, settingName)
     end
 end
 
-function UI.addGroup(name, label, settings)
+function UI.addGroup(name, settings)
+    local label = getLocaleText("GROUP_"..name)
+    
     SETTING_GROUPS[name] = {
         label = label,
         settings = settings
@@ -517,7 +528,7 @@ function UI.setTabs(tabs, default)
 
         tab:Show(true)
         tab:Enable(true)
-        tab:SetVal("tab_label", toWS(label))
+        tab:SetVal("tab_label", toWS(getLocaleText("TAB_"..label)))
         tab:SetVariant(0)
         if (label == default) then tab:SetVariant(1) end
         i = i + 1
@@ -572,6 +583,8 @@ function UI.render()
                 local button = SettingsMainFrame:GetChildChecked("Button"..(v), false)
                 if (button) then
                     button:Show(true)
+                    button:SetVal("label", toWS(getLocaleText("Button"..(v))))
+
                     wtSetPlace(button, { alignX = 0, posX = (35 + (i-1) * 115)})
                     table.insert(ACTIVE_BUTTONS, button)
                 end
@@ -582,6 +595,8 @@ function UI.render()
                 local button = SettingsMainFrame:GetChildChecked("Button"..(v), false)
                 if (button) then
                     button:Show(true)
+                    button:SetVal("label", toWS(getLocaleText("Button"..(v))))
+                    
                     wtSetPlace(button, { alignX = 1, highPosX = (45 + (i-1) * 115)})
                     table.insert(ACTIVE_BUTTONS, button)
                 end
@@ -638,11 +653,16 @@ function UI.render()
                     local panel = CreateWG("ItemSettingPanel", "ItemSettingPanel", groupFrame, true, { alignX=2, posX=1, sizeX=maxW, posY=minPosY + (i-1)*45 + extraPadding, highPosX = 0, alignY = 0 })
                     local enable = panel:GetChildChecked("EnableCheckbox", false)
                     local label = panel:GetChildChecked("ItemSettingPanelText", false)
+                    local btnDelete = panel:GetChildChecked("ButtonDelete", false)
                     extraPadding = extraPadding + 22
                     wtSetPlace(groupFrame, { sizeY = frameH + extraPadding})
                     groupFrame:AddChild(panel)
                     panel:SetName(id)
                     label:SetVal("text", v.label)
+
+                    if (btnDelete) then
+                        btnDelete:SetVal("label", toWS(getLocaleText("ButtonDelete")))
+                    end
 
                     local icon = panel:GetChildChecked("IconSpell", false)
 
@@ -742,7 +762,7 @@ function UI.render()
                         }
                     end
 
-                    button:SetVal("label", toWS(UI_SETTINGS[id].value))
+                    button:SetVal("label", toWS(getLocaleText(UI_SETTINGS[id].value)))
                     UI_SETTINGS[id].callback = v.params.callback
                 -- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
                 -- =-                   L I S T                   -=
