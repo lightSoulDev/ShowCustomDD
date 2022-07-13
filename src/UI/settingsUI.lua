@@ -116,6 +116,12 @@ function onInputEsc(params)
     end
 end
 
+function onInputFocus(params)
+    if (not params.active) then
+        onInputChange(params)
+    end
+end
+
 function onSliderChange(params)
     if (params.sender and UI_SETTINGS[params.sender]) then
         local descPanel = params.widget:GetParent():GetParent()
@@ -250,6 +256,7 @@ function UI.init(name)
     common.RegisterReactionHandler(onItemSettingCB, "setting_itemsetting_cb")
     common.RegisterReactionHandler(onSettingButtonInput, "setting_buttoninput")
     common.RegisterReactionHandler(onItemSettingDelete, "setting_itemsetting_delete")
+    common.RegisterReactionHandler(onInputFocus, "setting_input_focus")
 
     local config = userMods.GetGlobalConfigSection("UI_SETTINGS")
     if (config and len(config) > 0) then UI_SETTINGS = config end
@@ -267,6 +274,34 @@ function UI.init(name)
     for k, v in pairs(UI_SETTINGS.registeredTextures) do
         pushToChatSimple(k.."spell: "..tostring(v.spellId).." buff: "..tostring(v.buffId))
     end
+end
+
+function UI.get(group, name)
+    local id = group.."_"..name
+
+    if (UI_SETTINGS[id]) then
+        return UI_SETTINGS[id].value
+    end
+
+    return nil
+end
+
+function UI.getGroupColor(group)
+    local r = group.."_r"
+    local g = group.."_g"
+    local b = group.."_b"
+    local a = group.."_a"
+
+    if (UI_SETTINGS[r] and UI_SETTINGS[g] and UI_SETTINGS[b] and UI_SETTINGS[a]) then
+        return {
+            r = tonumber(UI_SETTINGS[r].value) / 255.0,
+            g = tonumber(UI_SETTINGS[g].value) / 255.0,
+            b = tonumber(UI_SETTINGS[b].value) / 255.0,
+            a = tonumber(UI_SETTINGS[a].value) / 100.0,
+        }
+    end
+
+    return {r = 0.0, g = 0.0, b = 0.0, a = 0.0}
 end
 
 function shallowcopy(orig)

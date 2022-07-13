@@ -32,7 +32,7 @@
 	<ReactionEsc>setting_input_esc</ReactionEsc>
 	<ReactionEnter>setting_input_change</ReactionEnter>
 	<ReactionChanged />
-	<reactionFocusChanged>RenameFocusChanged</reactionFocusChanged>
+	<reactionFocusChanged>setting_input_focus</reactionFocusChanged>
 	<TextStyle>
 		<multiline>false</multiline>
 		<wrapText>true</wrapText>
