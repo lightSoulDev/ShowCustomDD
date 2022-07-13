@@ -422,7 +422,7 @@ end
 
 function Init()
 	LANG = common.GetLocalization() or "rus"
-	UI.init("ShowDD")
+	UI.init("ShowCustomDD")
 
 	common.RegisterEventHandler(onUnitDamage, 'EVENT_UNIT_DAMAGE_RECEIVED')
 	common.RegisterEventHandler(onUnitHeal, 'EVENT_HEALING_RECEIVED')
@@ -443,6 +443,7 @@ function Init()
 	if (not Settings.floatFormat) then Settings.floatFormat = 1 end
 
 	setUpTemplates()
+	setupUI()
 
 	if (stateMainForm:GetChildChecked( "ContextDamageVisualization", false )) then
 		stateMainForm:GetChildChecked( "ContextDamageVisualization", false ):Show(false)
@@ -489,7 +490,9 @@ function setUpTemplates()
 	DnD.Init(out_template, out_template:GetChildChecked("IconSpell", true), true)
 	out_template:SetTransparentInput( true )
 	out_template:Show(false)
+end
 
+function setupUI()
 	UI.addGroup("PanelSettings", {
 		UI.createInput("MaxBars", {
 			maxChars = 3,

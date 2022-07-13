@@ -431,15 +431,3 @@ function getGroupTexture(group, name)
 		return g:GetTexture(name)
 	end
 end
-
-function getLocaleText(name)
-    local lang = LANG or "rus"
-
-	local l = LOCALES[lang]
-
-	if l then
-		return l[name] or name
-    else
-        return name
-	end
-end
