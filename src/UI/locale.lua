@@ -25,7 +25,8 @@ LOCALES = {
 
         ["TAB_Common"] = "Основные",
         ["TAB_Visual"] = "Цвета",
-        ["TAB_Ignored"] = "Игнор",
+        ["TAB_Ignored"] = "Игнор.",
+        ["TAB_ShowOnly"] = "Показ.",
 
         ["GROUP_PanelSettings"] = "Настройки панелей",
         ["SETTING_MaxBars"] = "Максимально количество панелей",
@@ -78,9 +79,13 @@ LOCALES = {
         ["SETTING_b"] = "Синий канал",
         ["SETTING_a"] = "Альфа канал",
 
-        ["GROUP_IgnoredNames"] = "Игнор по имени",
-        ["SETTING_EnableIgnore"] = "Включить фильтр по имени",
+        ["GROUP_IgnoredNames"] = "Показать всё кроме",
+        ["SETTING_EnableIgnore"] = "Включить фильтр",
         ["SETTING_AddIgnore"] = "Новый фильтр по имени",
+
+        ["GROUP_ShowOnlyNames"] = "Скрыть всё кроме",
+        ["SETTING_ShowOnly"] = "Включить фильтр (перекрывает все фильтры)",
+        ["SETTING_AddShow"] = "Новый фильтр по имени",
 
         ["CB_outP"] = "Исх. И",
         ["CB_incP"] = "Вход. И",

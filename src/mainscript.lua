@@ -146,11 +146,16 @@ function onUnitHeal(e)
 			if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.target)) ~= "") then params.name = fromWS(object.GetName(params.target)) end
 		end
 
-		if (Settings.showOnlySelected and Settings.showOnlyList) then
-			if (Settings.showOnlyList[category] and len(Settings.showOnlyList[category]) > 0 and not Settings.showOnlyList[category][params.name]) then return end
-		elseif (Settings.ignoredNames and Settings.ignoredNames[params.name] and Settings.ignoredNames[params.name].enabled) then
-			local filters = Settings.ignoredNames[params.name].filters
-			if (filters and filters[category]) then return end
+		if (UI.get("ShowOnlyNames", "ShowOnly")) then
+			local item = UI.getItem("ShowOnlyNames", params.name)
+			if (not item or not item.enabled) then
+				return
+			else 
+				if (not item[category]) then return end
+			end
+		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
+			local item = UI.getItem("IgnoredNames", params.name)
+			if (item and item.enabled and item[category]) then return end
 		end
 
 		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then params.nameClass = UI.get("LabelColors", "CRIT_HEAL_NAME") end
@@ -208,11 +213,16 @@ function onUnitDamage(e)
 		return
 	end
 
-	if (Settings.showOnlySelected and Settings.showOnlyList) then
-		if (Settings.showOnlyList[category] and len(Settings.showOnlyList[category]) > 0 and not Settings.showOnlyList[category][params.name]) then return end
-	elseif (Settings.ignoredNames and Settings.ignoredNames[params.name] and Settings.ignoredNames[params.name].enabled) then
-		local filters = Settings.ignoredNames[params.name].filters
-		if (filters and filters[category]) then return end
+	if (UI.get("ShowOnlyNames", "ShowOnly")) then
+		local item = UI.getItem("ShowOnlyNames", params.name)
+		if (not item or not item.enabled) then
+			return
+		else 
+			if (not item[category]) then return end
+		end
+	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
+		local item = UI.getItem("IgnoredNames", params.name)
+		if (item and item.enabled and item[category]) then return end
 	end
 
 	local shelf_val = {
@@ -510,7 +520,7 @@ function setupUI()
 	UI.addGroup("Formatting", {
 		UI.createCheckBox("ShortNum", true),
 		UI.createCheckBox("ShortenToMill", true),
-		UI.createList("FloatFormat", range(0, 5, 1), 2, false),
+		UI.createList("FloatFormat", range(0, 2, 1), 2, false),
 
 		UI.createCheckBox("ReplaceByName", false),
 		UI.createCheckBox("IgnoreBloodlust", true),
@@ -605,6 +615,17 @@ function setupUI()
 		}, 1),
 	})
 
+	UI.addGroup("ShowOnlyNames", {
+		UI.createCheckBox("ShowOnly", false),
+		UI.createButtonInput("AddShow", {
+			width = 90,
+			states = {
+				"ButtonAdd",
+			},
+			callback = addShowCB
+		}, 1),
+	})
+
 	UI.setTabs({
 		{
 			label = "Common",
@@ -639,6 +660,15 @@ function setupUI()
 			groups = {
 				"IgnoredNames"
 			}
+		},
+		{
+			label = "ShowOnly",
+			buttons = {
+				right = { "Accept" }
+			},
+			groups = {
+				"ShowOnlyNames"
+			}
 		}
 	}, "Common")
 
@@ -662,6 +692,41 @@ function switchButtonState(widget, settings)
 
 	UI.save()
 	UI.print()
+end
+
+function addShowCB(widget, settings, editline)
+	editline:SetFocus(false)
+	local text = editline:GetString()
+	
+	UI.groupPush("ShowOnlyNames",
+		UI.createItemSetting(text, {
+			iconName = text,
+			checkboxes = {
+				{
+					name = "outP",
+					label = "CB_outP",
+					default = false
+				},
+				{
+					name = "incP",
+					label = "CB_incP",
+					default = false
+				},
+				{
+					name = "outU",
+					label = "CB_outU",
+					default = false
+				},
+				{
+					name = "incU",
+					label = "CB_incU",
+					default = false
+				},
+			}
+		}, true), true
+	)
+
+	UI.render()
 end
 
 function addIgnoreCB(widget, settings, editline)

@@ -270,10 +270,6 @@ function UI.init(name)
     frameHeader:SetTransparentInput(false)
     DnD.Init(SettingsMainFrame, frameHeader)
     DnD.Enable(SettingsMainFrame, false)
-
-    for k, v in pairs(UI_SETTINGS.registeredTextures) do
-        pushToChatSimple(k.."spell: "..tostring(v.spellId).." buff: "..tostring(v.buffId))
-    end
 end
 
 function UI.get(group, name)
@@ -281,6 +277,23 @@ function UI.get(group, name)
 
     if (UI_SETTINGS[id]) then
         return UI_SETTINGS[id].value
+    end
+
+    return nil
+end
+
+function UI.getItem(group, item)
+    local id = group.."_"..item
+
+    if (UI_SETTINGS[id]) then
+        local tmp =  {
+            enabled = UI_SETTINGS[id].value
+        }
+        for k, v in pairs(UI_SETTINGS[id].cb) do
+            tmp[k] = v
+        end
+
+        return tmp
     end
 
     return nil
