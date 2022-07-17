@@ -9,5 +9,9 @@
 			<name>FALL</name>
 			<textureItem href="/Interface/Icons/Actions/DownRedButton.(UISingleTexture).xdb#xpointer(/UISingleTexture)" />
 		</Item>
+		<Item>
+			<name>UNKNOWN_ATTACK</name>
+			<textureItem href="/Interface/Icons/Spells/AutoAttack.(UISingleTexture).xdb#xpointer(/UISingleTexture)" />
+		</Item>
 	</Items>
 </UIRelatedTextures>

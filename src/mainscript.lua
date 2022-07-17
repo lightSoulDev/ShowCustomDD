@@ -146,7 +146,7 @@ function onUnitHeal(e)
 			if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.target)) ~= "") then params.name = fromWS(object.GetName(params.target)) end
 		end
 
-		if (UI.get("ShowOnlyNames", "ShowOnly")) then
+		if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
 			local item = UI.getItem("ShowOnlyNames", params.name)
 			if (not item or not item.enabled) then
 				return
@@ -213,7 +213,7 @@ function onUnitDamage(e)
 		return
 	end
 
-	if (UI.get("ShowOnlyNames", "ShowOnly")) then
+	if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
 		local item = UI.getItem("ShowOnlyNames", params.name)
 		if (not item or not item.enabled) then
 			return
@@ -259,7 +259,7 @@ function onUnitDamage(e)
 
 		if (e.isFall) then
 			params.icon = getTexture("FALL")
-			params.name = "Падение"
+			params.name = getLocaleText("DMG_FALL")
 		end
 		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
 
@@ -267,14 +267,15 @@ function onUnitDamage(e)
 
 		if (e.damageSource) then
 			if (e.damageSource == "DamageSource_BARRIER") then
-				params.name = "Из барьера"
+				params.name = getLocaleText("DMG_BARRIER")
 				if (params.icon == nil) then
 					params.icon = getTexture("BARRIER")
 				end
 			end
 		end
 		
-		if (params.icon) then UI.registerTexture(fromWS(e.ability), shelf_val) end
+		if (params.icon) then UI.registerTexture(fromWS(e.ability), shelf_val)
+		elseif (UI.get("PanelSettings", "ReplacePlaceholder")) then params.icon = getTexture("UNKNOWN_ATTACK") end 
 
 		if (e.lethal and UI.get("LabelColors", "LETHAL_NAME") ~= "-") then params.nameClass = UI.get("LabelColors", "LETHAL_NAME") end
 		if (e.lethal and UI.get("NumColors", "LETHAL_NUM") ~= "-") then params.amountClass = UI.get("NumColors", "LETHAL_NUM") end
@@ -294,6 +295,7 @@ end
 
 function pushToStack(params, stack)
 	if (not TEMPLATE[stack]) then return end
+	if ((params.name == "" or params.name == nil) and not UI.get("PanelSettings", "ShowUnnamed")) then return end
 
 	counter = counter + 1
 	local plate = mainForm:CreateWidgetByDesc(TEMPLATE[stack]:GetWidgetDesc())
@@ -515,6 +517,8 @@ function setupUI()
 			maxChars = 6,
 			filter = "_INT"
 		}, '8000'),
+		UI.createCheckBox("ReplacePlaceholder", true),
+		UI.createCheckBox("ShowUnnamed", false),
 	})
 
 	UI.addGroup("Formatting", {
@@ -550,38 +554,38 @@ function setupUI()
 		UI.createInput("MinOutPlayerDmg", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '10000'),
+		}, '1'),
 		UI.createInput("MinOutPlayerHeal", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '10000'),
+		}, '1'),
 		UI.createInput("MinIncPlayerDmg", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '1000'),
+		}, '1'),
 		UI.createInput("MinIncPlayerHeal", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '1000'),
+		}, '1'),
 	})
 
 	UI.addGroup("DamageFilteringU", {
 		UI.createInput("MinOutUnitDmg", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '10000'),
+		}, '1'),
 		UI.createInput("MinOutUnitHeal", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '10000'),
+		}, '1'),
 		UI.createInput("MinIncUnitDmg", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '1000'),
+		}, '1'),
 		UI.createInput("MinIncUnitHeal", {
 			maxChars = 10,
 			filter = "_INT"
-		}, '1000'),
+		}, '1'),
 	})
 
 	UI.addGroup("PanelBackground", {
@@ -599,7 +603,7 @@ function setupUI()
 			width = 212,
 		}, 0),
 		UI.createSlider("a", {
-			stepsCount = 255,
+			stepsCount = 100,
 			width = 212,
 		}, 0),
 	})
@@ -617,6 +621,7 @@ function setupUI()
 
 	UI.addGroup("ShowOnlyNames", {
 		UI.createCheckBox("ShowOnly", false),
+		UI.createCheckBox("ShowOnlyInc", false),
 		UI.createButtonInput("AddShow", {
 			width = 90,
 			states = {

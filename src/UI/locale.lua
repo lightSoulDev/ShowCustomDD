@@ -18,6 +18,9 @@ end
 
 LOCALES = {
     ["rus"] = {
+        ["DMG_FALL"] = "Падение",
+        ["DMG_BARRIER"] = "Из барьера",
+
         ["ButtonAccept"] = "Принять",
         ["ButtonRestore"] = "Сбросить",
         ["ButtonAdd"] = "Добавить",
@@ -34,6 +37,8 @@ LOCALES = {
         ["SETTING_IconPadding"] = "Отступ вокруг иконки",
         ["SETTING_TextPadding"] = "Отступ текста от иконки",
         ["SETTING_ShowTime"] = "Время жизни панели (мс)",
+        ["SETTING_ReplacePlaceholder"] = "Показывать икноку авто-атаки вместо вопросика",
+        ["SETTING_ShowUnnamed"] = "Показывать безымянный урон/лечение",
 
         ["GROUP_Formatting"] = "Форматирование",
         ["SETTING_ShortNum"] = "Сокращать цифры урона",
@@ -85,6 +90,7 @@ LOCALES = {
 
         ["GROUP_ShowOnlyNames"] = "Скрыть всё кроме",
         ["SETTING_ShowOnly"] = "Включить фильтр (перекрывает все фильтры)",
+        ["SETTING_ShowOnlyInc"] = "Не скрывать входящий урон/лечение",
         ["SETTING_AddShow"] = "Новый фильтр по имени",
 
         ["CB_outP"] = "Исх. И",
@@ -93,6 +99,8 @@ LOCALES = {
         ["CB_incU"] = "Вход. М",
     },
     ["eng_eu"] = {
+        ["DMG_FALL"] = "Fall",
+        ["DMG_BARRIER"] = "From barrier",
         ["ButtonAccept"] = "Accept",
         ["ButtonRestore"] = "Restore",
         ["ButtonAdd"] = "Add",
@@ -108,6 +116,8 @@ LOCALES = {
         ["SETTING_IconPadding"] = "Icon padding",
         ["SETTING_TextPadding"] = "Text padding",
         ["SETTING_ShowTime"] = "Time to live (ms)",
+        ["SETTING_ReplacePlaceholder"] = "Show auto-attack icon instead of placeholder",
+        ["SETTING_ShowUnnamed"] = "Show unnamed damage/heal",
 
         ["GROUP_Formatting"] = "Formating",
         ["SETTING_ShortNum"] = "Abbreviate damage numbers",
@@ -156,6 +166,11 @@ LOCALES = {
         ["GROUP_IgnoredNames"] = "Ignore by name",
         ["SETTING_EnableIgnore"] = "Enable all filters",
         ["SETTING_AddIgnore"] = "New filter",
+
+        ["GROUP_ShowOnlyNames"] = "Hide all, except",
+        ["SETTING_ShowOnly"] = "Enable filter (overlaps all filters)",
+        ["SETTING_ShowOnlyInc"] = "Don't hide incoming damage/heal",
+        ["SETTING_AddShow"] = "New filter",
 
         ["CB_outP"] = "Out. P",
         ["CB_incP"] = "Inc. P",
