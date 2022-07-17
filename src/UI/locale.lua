@@ -39,6 +39,7 @@ LOCALES = {
         ["SETTING_ShowTime"] = "Время жизни панели (мс)",
         ["SETTING_ReplacePlaceholder"] = "Показывать икноку авто-атаки вместо вопросика",
         ["SETTING_ShowUnnamed"] = "Показывать безымянный урон/лечение",
+        ["SETTING_EnableCustomIcons"] = "Включить кастомные иконки (CustomIcons)",
 
         ["GROUP_Formatting"] = "Форматирование",
         ["SETTING_ShortNum"] = "Сокращать цифры урона",
@@ -118,6 +119,7 @@ LOCALES = {
         ["SETTING_ShowTime"] = "Time to live (ms)",
         ["SETTING_ReplacePlaceholder"] = "Show auto-attack icon instead of placeholder",
         ["SETTING_ShowUnnamed"] = "Show unnamed damage/heal",
+        ["SETTING_EnableCustomIcons"] = "Enable custom icons (CustomIcons)",
 
         ["GROUP_Formatting"] = "Formating",
         ["SETTING_ShortNum"] = "Abbreviate damage numbers",

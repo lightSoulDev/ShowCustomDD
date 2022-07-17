@@ -24,5 +24,9 @@
 		<groupName>RELATED_TEXTURES</groupName>
 		<textures href="RelatedTextures.(UIRelatedTextures).xdb#xpointer(/UIRelatedTextures)"/>
 	</Item>
+	<Item>
+		<groupName>CUSTOM_ICONS</groupName>
+		<textures href="CustomIcons.(UIRelatedTextures).xdb#xpointer(/UIRelatedTextures)"/>
+	</Item>
 </texturesGroups>
 </UIAddon>

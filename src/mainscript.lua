@@ -67,6 +67,18 @@ function getTexture(name)
 	if group then
 		return group:GetTexture(name)
 	end
+
+	return nil
+end
+
+function getCustomIcon(name)
+	local group = common.GetAddonRelatedTextureGroup( "CUSTOM_ICONS" )
+
+	if group then
+		return group:GetTexture(name)
+	end
+
+	return nil
 end
 
 function onUnitHeal(e)
@@ -147,14 +159,14 @@ function onUnitHeal(e)
 		end
 
 		if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
-			local item = UI.getItem("ShowOnlyNames", params.name)
+			local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
 			if (not item or not item.enabled) then
 				return
 			else 
 				if (not item[category]) then return end
 			end
 		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", params.name)
+			local item = UI.getItem("IgnoredNames", fromWS(e.ability))
 			if (item and item.enabled and item[category]) then return end
 		end
 
@@ -214,14 +226,14 @@ function onUnitDamage(e)
 	end
 
 	if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
-		local item = UI.getItem("ShowOnlyNames", params.name)
+		local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
 		if (not item or not item.enabled) then
 			return
 		else 
 			if (not item[category]) then return end
 		end
 	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-		local item = UI.getItem("IgnoredNames", params.name)
+		local item = UI.getItem("IgnoredNames", fromWS(e.ability))
 		if (item and item.enabled and item[category]) then return end
 	end
 
@@ -288,6 +300,10 @@ function onUnitDamage(e)
 
 		if (e.isMiss and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
 		if (e.isMiss and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
+
+		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(fromWS(e.ability)) ~= nil) then
+			params.icon = getCustomIcon(fromWS(e.ability))
+		end
 
 		pushToStack(params, stack) 
 	end
@@ -519,6 +535,7 @@ function setupUI()
 		}, '8000'),
 		UI.createCheckBox("ReplacePlaceholder", true),
 		UI.createCheckBox("ShowUnnamed", false),
+		UI.createCheckBox("EnableCustomIcons", true),
 	})
 
 	UI.addGroup("Formatting", {
