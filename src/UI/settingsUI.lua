@@ -25,6 +25,33 @@ local ITEM_SETTING_CB_POS = {
     },
 }
 
+local ITEM_SETTING_CB_POS_6 = {
+    {
+        alignX = 0, posX = 271, highPosX = 0,
+        alignY = 0, posY = 4, highPosY = 0,
+    },
+    {
+        alignX = 0, posX = 371, highPosX = 0,
+        alignY = 0, posY = 4, highPosY = 0,
+    },
+    {
+        alignX = 0, posX = 471, highPosX = 0,
+        alignY = 0, posY = 4, highPosY = 0,
+    },
+    {
+        alignX = 0, posX = 271, highPosX = 0,
+        alignY = 1, posY = 0, highPosY = 6,
+    },
+    {
+        alignX = 0, posX = 371, highPosX = 0,
+        alignY = 1, posY = 0, highPosY = 6,
+    },
+    {
+        alignX = 0, posX = 471, highPosX = 0,
+        alignY = 1, posY = 0, highPosY = 6,
+    },
+}
+
 local ACTIVE_BUTTONS = {}
 local CURRENT_TAB = nil
 local SettingsMainFrame = mainForm:GetChildChecked("SettingsMain", false)
@@ -490,7 +517,8 @@ function UI.createItemSetting(name, options, enabled)
     local temp = { name = name, label = label, type = "ItemSetting", params = {
         options = {},
         iconName = options.iconName or "_Placeholder_",
-        enabled = enabled
+        enabled = enabled,
+        static = options.static
     }}
 
     for k, v in pairs(options.checkboxes) do
@@ -709,6 +737,7 @@ function UI.render()
                     label:SetVal("text", v.label)
 
                     if (btnDelete) then
+                        if (v.params.static) then btnDelete:Show(false) end
                         btnDelete:SetVal("label", toWS(getLocaleText("ButtonDelete")))
                     end
 
@@ -726,7 +755,7 @@ function UI.render()
                         UI_SETTINGS[id] = { type = v.type, value = v.params.enabled, cb = {}}
                     end
 
-                    for i = 1, 4, 1 do
+                    for i = 1, #(v.params.options), 1 do
                         local option = v.params.options[i]
                         local cb = panel:GetChildChecked("CB_"..tostring(i), false)
                         local label = panel:GetChildChecked("Text_"..tostring(i), false)
@@ -743,7 +772,12 @@ function UI.render()
                                 local tmp = ITEM_SETTING_CB_POS[2]
                                 wtSetPlace(cb, { alignY = 2, posY = 2, highPosY = 0, posX = tmp.posX })
                                 wtSetPlace(label, { alignY = 2, posY = 2, highPosY = 0, posX = tmp.posX + 31 })
-                            else
+                            elseif (#(v.params.options) == 6) then
+                                local tmp = ITEM_SETTING_CB_POS_6[i]
+                                wtSetPlace(cb, tmp)
+                                wtSetPlace(label, tmp)
+                                wtSetPlace(label, { posX = tmp.posX + 31 })
+                            elseif (#(v.params.options) == 4) then
                                 local tmp = ITEM_SETTING_CB_POS[i]
                                 wtSetPlace(cb, tmp)
                                 wtSetPlace(label, tmp)

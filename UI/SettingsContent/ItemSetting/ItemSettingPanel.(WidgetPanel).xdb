@@ -13,11 +13,15 @@
 		<Item href="Checkboxes/CB_2.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="Checkboxes/CB_3.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="Checkboxes/CB_4.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="Checkboxes/CB_5.(WidgetButton).xdb#xpointer(/WidgetButton)" />
+		<Item href="Checkboxes/CB_6.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 
 		<Item href="Checkboxes/Text_1.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 		<Item href="Checkboxes/Text_2.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 		<Item href="Checkboxes/Text_3.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 		<Item href="Checkboxes/Text_4.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
+		<Item href="Checkboxes/Text_5.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
+		<Item href="Checkboxes/Text_6.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
 
 	</Children>
 	<BackLayer href="../Common/OptionTiledFrame.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" />
