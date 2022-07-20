@@ -150,6 +150,8 @@ function onUnitHeal(e)
 			if (info and info.name) then params.name = fromWS(info.name) end
 		end
 
+		params.realName = params.name
+
 		-- if (params.name == lastDMG and UI.get("Formatting", "IgnoreBloodlust")) then return end
 
 		if (params.target == avatar.GetId()) then
@@ -173,8 +175,8 @@ function onUnitHeal(e)
 		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then params.nameClass = UI.get("LabelColors", "CRIT_HEAL_NAME") end
 		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then params.amountClass = UI.get("NumColors", "CRIT_HEAL_NUM") end
 
-		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(fromWS(e.ability)) ~= nil) then
-			params.icon = getCustomIcon(fromWS(e.ability))
+		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(params.realName) ~= nil) then
+			params.icon = getCustomIcon(params.realName)
 		end
 
 		pushToStack(params, stack) 
