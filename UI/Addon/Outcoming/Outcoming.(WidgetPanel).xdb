@@ -12,6 +12,8 @@
 			<Align>WIDGET_ALIGN_CENTER</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
 			<Size>300</Size>
+			<Pos>-225</Pos>
+			<HighPos>0</HighPos>
 		</X>
 		<Y>
 			<Align>WIDGET_ALIGN_CENTER</Align>
