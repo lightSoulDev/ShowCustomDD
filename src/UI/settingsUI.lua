@@ -359,6 +359,8 @@ function shallowcopy(orig)
 end
 
 function UI.registerTexture(key, obj)
+    if UI_SETTINGS.registeredTextures[key] ~= nil then return end
+
     UI_SETTINGS.registeredTextures[key] = {
         obj = obj,
 		spellId = obj.spellId,
@@ -467,7 +469,7 @@ end
 function UI.createButtonInput(name, options, default)
     local label = getLocaleText("SETTING_"..name)
 
-    local temp = { name = name, label = label, btnLabel = btnLabel, type = "ButtonInput", params = {
+    local temp = { name = name, label = label, type = "ButtonInput", params = {
         callback = options.callback,
         states = options.states,
         options = {
@@ -488,7 +490,7 @@ end
 function UI.createButton(name, options, default)
     local label = getLocaleText("SETTING_"..name)
 
-    local temp = { name = name, label = label, btnLabel = btnLabel, type = "Button", params = {
+    local temp = { name = name, label = label, type = "Button", params = {
         callback = options.callback,
         states = options.states,
         options = {

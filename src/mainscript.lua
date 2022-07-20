@@ -57,14 +57,21 @@ function updatePlacement(stack)
 
 		tempPos.posY = tempPos.posY + (tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding"))*2)*(#STACK[stack] - i)
 		wtSetPlace(v, tempPos)
-		v:Show((#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars")))
+		local show = (#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars"))
+		v:Show(show)
+		
+		if (not show) then
+			table.remove(STACK[stack], i)
+			v:DestroyWidget()
+		end
+
 	end
 end
 
 function getTexture(name)
 	local group = common.GetAddonRelatedTextureGroup( "RELATED_TEXTURES" )
 
-	if group then
+	if group and group:HasTexture(name) then
 		return group:GetTexture(name)
 	end
 
@@ -74,7 +81,7 @@ end
 function getCustomIcon(name)
 	local group = common.GetAddonRelatedTextureGroup( "CUSTOM_ICONS" )
 
-	if group then
+	if group and group:HasTexture(name) then
 		return group:GetTexture(name)
 	end
 
@@ -405,11 +412,11 @@ function pushToStack(params, stack)
 		if (stack == "out") then
 			wtSetPlace(background, { 
 			sizeX=(tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w ),
-			alignX=1, highPosX = 0, posX = 0})
+			alignX=1, highPosX = 0, posX = 0, sizeY = tonumber(UI.get("PanelSettings", "IconSize"))})
 		else
 			wtSetPlace(background, { 
 				sizeX=(tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w ),
-				alignX=0, highPosX = 0, posX = 0})
+				alignX=0, highPosX = 0, posX = 0, sizeY = tonumber(UI.get("PanelSettings", "IconSize"))})
 		end
 	end
 
@@ -476,10 +483,10 @@ function Init()
 	DnD.Init(cfgBtn,cfgBtn, true)
 	DnD.Enable(cfgBtn, true)
 
-	setUpTemplates()
 	setupUI()
+	setUpTemplates()
 
-	if (stateMainForm:GetChildChecked( "ContextDamageVisualization", false )) then
+	if (stateMainForm:GetChildUnchecked( "ContextDamageVisualization", false ) ~= nil) then
 		stateMainForm:GetChildChecked( "ContextDamageVisualization", false ):Show(false)
 	end
 end
