@@ -173,6 +173,10 @@ function onUnitHeal(e)
 		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then params.nameClass = UI.get("LabelColors", "CRIT_HEAL_NAME") end
 		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then params.amountClass = UI.get("NumColors", "CRIT_HEAL_NUM") end
 
+		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(fromWS(e.ability)) ~= nil) then
+			params.icon = getCustomIcon(fromWS(e.ability))
+		end
+
 		pushToStack(params, stack) 
 	end
 end
