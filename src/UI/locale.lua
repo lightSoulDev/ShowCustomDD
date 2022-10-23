@@ -84,6 +84,8 @@ LOCALES = {
 
         ["GROUP_PanelBackground"] = "Подложка",
         ["SETTING_ShowBg"] = "Отображение подложки",
+        ["SETTING_UseBgCustomWidth"] = "Задать свою ширину",
+        ["SETTING_BgCustomWidth"] = "Ширина",
         ["SETTING_r"] = "Красный канал",
         ["SETTING_g"] = "Зеленый канал",
         ["SETTING_b"] = "Синий канал",
@@ -166,6 +168,8 @@ LOCALES = {
 
         ["GROUP_PanelBackground"] = "Backlayer",
         ["SETTING_ShowBg"] = "Show Backlayer",
+        ["SETTING_UseBgCustomWidth"] = "Use custom width",
+        ["SETTING_BgCustomWidth"] = "Width",
         ["SETTING_r"] = "Red channel",
         ["SETTING_g"] = "Green channel",
         ["SETTING_b"] = "Blue channel",

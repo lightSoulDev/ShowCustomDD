@@ -418,6 +418,11 @@ function pushToStack(params, stack)
 
 	if (background) then
 		local w = (#(_formatedAmount) + 3 + #_name) * (fontSize * 0.61)
+		if (UI.get("PanelBackground", "UseBgCustomWidth")) then
+			w = tonumber(UI.get("PanelBackground", "BgCustomWidth"))
+		elseif (UI.get("PanelSettings", "HideLabels")) then
+			w = (#(_formatedAmount)) * (fontSize * 0.61)
+		end
 		if (stack == "out") then
 			wtSetPlace(background, { 
 			sizeX=(tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w ),
@@ -631,6 +636,11 @@ function setupUI()
 
 	UI.addGroup("PanelBackground", {
 		UI.createCheckBox("ShowBg", false),
+		UI.createCheckBox("UseBgCustomWidth", false),
+		UI.createInput("BgCustomWidth", {
+			maxChars = 5,
+			filter = "_INT"
+		}, '100'),
 		UI.createSlider("r", {
 			stepsCount = 255,
 			width = 212,
