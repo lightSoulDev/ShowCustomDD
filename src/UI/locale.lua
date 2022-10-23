@@ -41,6 +41,8 @@ LOCALES = {
         ["SETTING_ShowUnnamed"] = "Показывать безымянный урон/лечение",
         ["SETTING_EnableCustomIcons"] = "Включить кастомные иконки (CustomIcons)",
         ["SETTING_HideLabels"] = "Скрыть текст (оставить только иконку и цифры)",
+        ["SETTING_SwapPanels"] = "Поменять местами панели",
+
 
 
         ["GROUP_Formatting"] = "Форматирование",
@@ -123,6 +125,7 @@ LOCALES = {
         ["SETTING_ShowUnnamed"] = "Show unnamed damage/heal",
         ["SETTING_EnableCustomIcons"] = "Enable custom icons (CustomIcons)",
         ["SETTING_HideLabels"] = "Hide label (Show only icon and dmg)",
+        ["SETTING_SwapPanels"] = "Swap pannels",
 
         ["GROUP_Formatting"] = "Formating",
         ["SETTING_ShortNum"] = "Abbreviate damage numbers",

@@ -220,6 +220,9 @@ function onUnitDamage(e)
 		end
 
 		stack = "inc"
+		if (UI.get("PanelSettings", "SwapPanels")) then
+			stack = "out"
+		end
 	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
 		if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.target)) ~= "") then params.name = fromWS(object.GetName(params.target)) end
 		if (UI.get("Formatting", "HideOutMisses") and (e.isMiss or e.isDodge)) then return end
@@ -234,6 +237,9 @@ function onUnitDamage(e)
 		end
 
 		stack = "out"
+		if (UI.get("PanelSettings", "SwapPanels")) then
+			stack = "inc"
+		end
 	else
 		return
 	end
@@ -553,6 +559,7 @@ function setupUI()
 		UI.createCheckBox("ShowUnnamed", false),
 		UI.createCheckBox("EnableCustomIcons", true),
 		UI.createCheckBox("HideLabels", false),
+		UI.createCheckBox("SwapPanels", false),
 	})
 
 	UI.addGroup("Formatting", {
