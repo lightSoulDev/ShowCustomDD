@@ -387,24 +387,27 @@ function pushToStack(params, stack)
 
 		local incLabel = CreateWG("Label", "CastName", plate, true, { alignX=0, sizeX=maxTextSize, posX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, highPosX = 0, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
 		incLabel:SetFormat (userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='"..tostring(fontSize).."' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>" ))
-		incLabel:SetVal("name", _name)
-		incLabel:SetClassVal("class", params.nameClass or "ColorWhite")
 		incLabel:SetVal("dmg", _formatedAmount)
 		incLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
-		incLabel:SetVal("sep", " - ")
-		incLabel:SetClassVal("sep", "ColorWhite")
+		if (not UI.get("PanelSettings", "HideLabels")) then
+			incLabel:SetVal("sep", " - ")
+			incLabel:SetClassVal("sep", "ColorWhite")
+			incLabel:SetVal("name", _name)
+			incLabel:SetClassVal("class", params.nameClass or "ColorWhite")
+		end
 	else
 		wtSetPlace(plate:GetChildChecked("IconSpell", true), {sizeY=tonumber(UI.get("PanelSettings", "IconSize")), sizeX=tonumber(UI.get("PanelSettings", "IconSize")), posX=0, highPosX=tonumber(UI.get("PanelSettings", "IconPadding"))})
-
 		local outLabel = CreateWG("Label", "CastName", plate, true, { alignX=1, sizeX=maxTextSize, posX = 0, highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
 		outLabel:SetFormat (userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='"..tostring(fontSize).."' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>" ))
-		
-		outLabel:SetVal("name", _name)
-		outLabel:SetClassVal("class", params.nameClass or "ColorWhite")
 		outLabel:SetVal("dmg", _formatedAmount)
 		outLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
-		outLabel:SetVal("sep", " - ")
-		outLabel:SetClassVal("sep", "ColorWhite")
+
+		if (not UI.get("PanelSettings", "HideLabels")) then
+			outLabel:SetVal("name", _name)
+			outLabel:SetClassVal("class", params.nameClass or "ColorWhite")
+			outLabel:SetVal("sep", " - ")
+			outLabel:SetClassVal("sep", "ColorWhite")
+		end
 	end
 
 	if (background) then
@@ -420,8 +423,8 @@ function pushToStack(params, stack)
 		end
 	end
 
-	plate:SetTransparentInput( true )
-	plate:SetClipContent( false )
+	plate:SetTransparentInput(true)
+	plate:SetClipContent(false)
 	plate:PlayResizeEffect(plate:GetPlacementPlain(), plate:GetPlacementPlain(), tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
 end
 
@@ -549,6 +552,7 @@ function setupUI()
 		UI.createCheckBox("ReplacePlaceholder", true),
 		UI.createCheckBox("ShowUnnamed", false),
 		UI.createCheckBox("EnableCustomIcons", true),
+		UI.createCheckBox("HideLabels", false),
 	})
 
 	UI.addGroup("Formatting", {

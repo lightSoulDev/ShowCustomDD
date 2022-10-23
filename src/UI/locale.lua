@@ -40,6 +40,8 @@ LOCALES = {
         ["SETTING_ReplacePlaceholder"] = "Показывать икноку авто-атаки вместо вопросика",
         ["SETTING_ShowUnnamed"] = "Показывать безымянный урон/лечение",
         ["SETTING_EnableCustomIcons"] = "Включить кастомные иконки (CustomIcons)",
+        ["SETTING_HideLabels"] = "Скрыть текст (оставить только иконку и цифры)",
+
 
         ["GROUP_Formatting"] = "Форматирование",
         ["SETTING_ShortNum"] = "Сокращать цифры урона",
@@ -120,6 +122,7 @@ LOCALES = {
         ["SETTING_ReplacePlaceholder"] = "Show auto-attack icon instead of placeholder",
         ["SETTING_ShowUnnamed"] = "Show unnamed damage/heal",
         ["SETTING_EnableCustomIcons"] = "Enable custom icons (CustomIcons)",
+        ["SETTING_HideLabels"] = "Hide label (Show only icon and dmg)",
 
         ["GROUP_Formatting"] = "Formating",
         ["SETTING_ShortNum"] = "Abbreviate damage numbers",
