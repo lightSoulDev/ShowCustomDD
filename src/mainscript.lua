@@ -132,12 +132,14 @@ local function pushToStack(params, stack)
 			if (floatP) then
 				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000000, floatP .. 'f')) .. "M"
 			else
+				---@diagnostic disable-next-line: undefined-field
 				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000000), '%d')) .. "M"
 			end
 		elseif (_amount >= 1000) then
 			if (floatP) then
 				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000, floatP .. 'f')) .. "K"
 			else
+				---@diagnostic disable-next-line: undefined-field
 				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000), '%d')) .. "K"
 			end
 		end
@@ -641,24 +643,6 @@ local function setUpTemplates()
 	DnD.Init(out_template, out_template:GetChildChecked("IconSpell", true), true)
 	out_template:SetTransparentInput(true)
 	out_template:Show(false)
-end
-
-local function switchButtonState(widget, settings)
-	local prevState = settings.state
-	local newState = prevState
-
-	if (prevState == #(settings.states)) then
-		newState = 1
-	else
-		newState = newState + 1
-	end
-
-	settings.state = newState
-	settings.value = settings.states[newState]
-	widget:SetVal("label", ToWS(settings.value))
-
-	UI.save()
-	UI.print()
 end
 
 local function addShowCB(widget, settings, editline)
