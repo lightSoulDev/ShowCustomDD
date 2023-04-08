@@ -10,7 +10,24 @@ local STACK = {
 	['inc'] = {}
 }
 
-function onPlayEffectFinished(e)
+local function fadePlate(plate)
+	plate:PlayFadeEffect(1.0, 0.0, 500)
+end
+
+local function destroyPlate(widget, stack)
+	widget:Show(false)
+
+	for k, v in pairs(STACK[stack]) do
+		if (v:GetName() == widget:GetName()) then
+			table.remove(STACK[stack], k)
+			v:DestroyWidget()
+		end
+	end
+
+	updatePlacement(stack)
+end
+
+local function onPlayEffectFinished(e)
 	if e.wtOwner then
 		if (e.effectType == 2) then
 			local split_string = {}
@@ -33,24 +50,7 @@ function onPlayEffectFinished(e)
 	end
 end
 
-function fadePlate(plate)
-	plate:PlayFadeEffect(1.0, 0.0, 500)
-end
-
-function destroyPlate(widget, stack)
-	widget:Show(false)
-
-	for k, v in pairs(STACK[stack]) do
-		if (v:GetName() == widget:GetName()) then
-			table.remove(STACK[stack], k)
-			v:DestroyWidget()
-		end
-	end
-
-	updatePlacement(stack)
-end
-
-function updatePlacement(stack)
+local function updatePlacement(stack)
 	for i = #STACK[stack], 1, -1 do
 		local v = STACK[stack][i]
 		local tempPos = TEMPLATE[stack]:GetPlacementPlain()
@@ -69,298 +69,7 @@ function updatePlacement(stack)
 	end
 end
 
-function getTexture(name)
-	local group = common.GetAddonRelatedTextureGroup("RELATED_TEXTURES")
-
-	if group and group:HasTexture(name) then
-		return group:GetTexture(name)
-	end
-
-	return nil
-end
-
-function getCustomIcon(name)
-	local group = common.GetAddonRelatedTextureGroup("CUSTOM_ICONS")
-
-	if group and group:HasTexture(name) then
-		return group:GetTexture(name)
-	end
-
-	return nil
-end
-
-function onUnitHeal(e)
-	-- pushToChatSimple("onUnitHeal: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
-
-	local params = {
-		source = e.healerId,
-		target = e.unitId,
-		amount = e.heal,
-		amountClass = UI.get("NumColors", "HEAL_NUM"),
-		nameClass = UI.get("LabelColors", "HEAL_NAME"),
-		icon = nil,
-		name = ""
-	}
-
-	if (UI.get("Formatting", "IgnoreBloodlust") and e.runeResisted == 0 and object.IsInCombat(avatar.GetId())) then return end
-
-	local stack
-	local category = "any"
-
-	if (params.target == avatar.GetId()) then
-		-- ��� ������� �����
-		if (unit.IsPlayer(params.source)) then
-			category = "incP"
-			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal"))) then return end
-		else -- ��� ������� ���
-			category = "incU"
-			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal"))) then return end
-		end
-		stack = "inc"
-	elseif (params.source == avatar.GetId()) then
-		-- �������� �� ������
-		if (unit.IsPlayer(params.target)) then
-			category = "outP"
-			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal"))) then return end
-		else -- �������� �� �����
-			category = "outU"
-			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal"))) then return end
-		end
-
-		-- �������� �� ������
-		if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and unit.IsPlayer(params.target)) then return end
-		-- �������� �� ������
-		if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and not unit.IsPlayer(params.target)) then return end
-		stack = "out"
-	end
-
-	if (stack) then
-		if (e.spellId) then
-			params.icon = spellLib.GetIcon(e.spellId)
-			params.name = FromWS(spellLib.GetDescription(e.spellId).name)
-		elseif (e.buffId) then
-			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
-
-			if (info) then
-				if (info.texture) then
-					params.icon = info.texture
-				elseif (info.producer and info.producer.spellId) then
-					params.icon = spellLib.GetIcon(info.producer.spellId)
-				end
-
-				if (info.name) then params.name = FromWS(info.name) end
-			end
-		elseif (e.abilityId) then
-			local info = avatar.GetAbilityInfo(e.abilityId)
-			if (info and info.texture) then params.icon = info.texture end
-			if (info and info.name) then params.name = FromWS(info.name) end
-		end
-
-		params.realName = params.name
-
-		-- if (params.name == lastDMG and UI.get("Formatting", "IgnoreBloodlust")) then return end
-
-		if (params.target == avatar.GetId()) then
-			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
-				params.name =
-					FromWS(object.GetName(params.source))
-			end
-		elseif (params.source == avatar.GetId()) then
-			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
-				params.name =
-					FromWS(object.GetName(params.target))
-			end
-		end
-
-		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
-			if (not item or not item.enabled) then
-				return
-			else
-				if (not item[category]) then return end
-			end
-		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
-			if (item and item.enabled and item[category]) then return end
-		end
-
-		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then
-			params.nameClass = UI.get("LabelColors",
-				"CRIT_HEAL_NAME")
-		end
-		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then
-			params.amountClass = UI.get("NumColors",
-				"CRIT_HEAL_NUM")
-		end
-
-		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(params.realName) ~= nil) then
-			params.icon = getCustomIcon(params.realName)
-		end
-
-		pushToStack(params, stack)
-	end
-end
-
-function onUnitDamage(e)
-	-- pushToChatSimple("onUnitDamage: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
-
-	local params = {
-		source = e.source,
-		target = e.target,
-		amount = e.amount,
-		amountClass = UI.get("NumColors", "DMG_NUM") or "DamageYellow",
-		nameClass = UI.get("LabelColors", "DMG_NAME") or "ColorWhite",
-		icon = nil,
-		name = FromWS(e.ability)
-	}
-
-	local stack
-	local category = "any"
-
-	if (params.target == avatar.GetId()) then
-		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
-			params.name =
-				FromWS(object.GetName(params.source))
-		end
-		if (UI.get("Formatting", "HideIncMisses") and (e.isMiss or e.isDodge)) then return end
-
-		-- ��� ������ �����
-		if (unit.IsPlayer(params.source)) then
-			category = "incP"
-			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg"))) then return end
-		else -- ��� ������ ���
-			category = "incU"
-			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg"))) then return end
-		end
-
-		stack = "inc"
-		if (UI.get("PanelSettings", "SwapPanels")) then
-			stack = "out"
-		end
-	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
-		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
-			params.name =
-				FromWS(object.GetName(params.target))
-		end
-		if (UI.get("Formatting", "HideOutMisses") and (e.isMiss or e.isDodge)) then return end
-
-		-- ������� �� ������
-		if (unit.IsPlayer(params.target)) then
-			category = "outP"
-			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg"))) then return end
-		else -- ������� �� ������
-			category = "outU"
-			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg"))) then return end
-		end
-
-		stack = "out"
-		if (UI.get("PanelSettings", "SwapPanels")) then
-			stack = "inc"
-		end
-	else
-		return
-	end
-
-	if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-		local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
-		if (not item or not item.enabled) then
-			return
-		else
-			if (not item[category]) then return end
-		end
-	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-		local item = UI.getItem("IgnoredNames", FromWS(e.ability))
-		if (item and item.enabled and item[category]) then return end
-	end
-
-	local shelf_val = {
-
-	}
-
-	if (stack) then
-		if (e.buffId) then
-			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
-
-			if (info) then
-				if (info.texture) then
-					params.icon = info.texture
-				elseif (info.producer and info.producer.spellId) then
-					params.icon = spellLib.GetIcon(info.producer.spellId)
-				end
-				shelf_val.buffId = object.GetBuffInfo(e.buffId).buffId
-			end
-		end
-		if (not params.icon and e.spellId) then
-			params.icon = spellLib.GetIcon(e.spellId)
-			shelf_val.spellId = e.spellId
-		end
-		if (not params.icon and e.abilityId) then
-			local info = avatar.GetAbilityInfo(e.abilityId)
-			if (info and info.texture) then params.icon = info.texture end
-			shelf_val.abilityId = e.abilityId
-		end
-		if (not params.icon and e.mapModifierId) then
-			local info = cartographer.GetMapModifierInfo(e.mapModifierId)
-			if (info and info.image) then params.icon = info.image end
-			shelf_val.mapModifierId = e.mapModifierId
-		end
-
-		if (e.isFall) then
-			params.icon = getTexture("FALL")
-			params.name = getLocaleText("DMG_FALL")
-		end
-		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
-
-		-- pushToChatSimple(e.damageSource)
-
-		if (e.damageSource) then
-			if (e.damageSource == "DamageSource_BARRIER") then
-				params.name = getLocaleText("DMG_BARRIER")
-				if (params.icon == nil) then
-					params.icon = getTexture("BARRIER")
-				end
-			end
-		end
-
-		if (params.icon) then
-			UI.registerTexture(FromWS(e.ability), shelf_val)
-		elseif (UI.get("PanelSettings", "ReplacePlaceholder")) then
-			params.icon = getTexture("UNKNOWN_ATTACK")
-		end
-
-		if (e.lethal and UI.get("LabelColors", "LETHAL_NAME") ~= "-") then
-			params.nameClass = UI.get("LabelColors",
-				"LETHAL_NAME")
-		end
-		if (e.lethal and UI.get("NumColors", "LETHAL_NUM") ~= "-") then
-			params.amountClass = UI.get("NumColors",
-				"LETHAL_NUM")
-		end
-
-		if (e.isCritical and UI.get("LabelColors", "CRIT_DMG_NAME")) then
-			params.nameClass = UI.get("LabelColors",
-				"CRIT_DMG_NAME")
-		end
-		if (e.isCritical and UI.get("NumColors", "CRIT_DMG_NUM")) then
-			params.amountClass = UI.get("NumColors",
-				"CRIT_DMG_NUM")
-		end
-
-		if (e.isDodge and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
-		if (e.isDodge and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
-
-		if (e.isMiss and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
-		if (e.isMiss and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
-
-		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(FromWS(e.ability)) ~= nil) then
-			params.icon = getCustomIcon(FromWS(e.ability))
-		end
-
-		pushToStack(params, stack)
-	end
-end
-
-function pushToStack(params, stack)
+local function pushToStack(params, stack)
 	if (not TEMPLATE[stack]) then return end
 	if ((params.name == "" or params.name == nil) and not UI.get("PanelSettings", "ShowUnnamed")) then return end
 
@@ -536,7 +245,276 @@ function pushToStack(params, stack)
 		tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
 end
 
-function onSlash(p)
+local function onUnitHeal(e)
+	-- pushToChatSimple("onUnitHeal: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+
+	local params = {
+		source = e.healerId,
+		target = e.unitId,
+		amount = e.heal,
+		amountClass = UI.get("NumColors", "HEAL_NUM"),
+		nameClass = UI.get("LabelColors", "HEAL_NAME"),
+		icon = nil,
+		name = ""
+	}
+
+	if (UI.get("Formatting", "IgnoreBloodlust") and e.runeResisted == 0 and object.IsInCombat(avatar.GetId())) then return end
+
+	local stack
+	local category = "any"
+
+	if (params.target == avatar.GetId()) then
+		-- We got healed by player
+		if (unit.IsPlayer(params.source)) then
+			category = "incP"
+			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal"))) then return end
+		else -- We got healed by unit
+			category = "incU"
+			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal"))) then return end
+		end
+		stack = "inc"
+	elseif (params.source == avatar.GetId()) then
+		-- We healed player
+		if (unit.IsPlayer(params.target)) then
+			category = "outP"
+			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal"))) then return end
+		else -- We healed unit
+			category = "outU"
+			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal"))) then return end
+		end
+
+		if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and unit.IsPlayer(params.target)) then return end
+		if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and not unit.IsPlayer(params.target)) then return end
+		stack = "out"
+	end
+
+	if (stack) then
+		if (e.spellId) then
+			params.icon = spellLib.GetIcon(e.spellId)
+			params.name = FromWS(spellLib.GetDescription(e.spellId).name)
+		elseif (e.buffId) then
+			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
+
+			if (info) then
+				if (info.texture) then
+					params.icon = info.texture
+				elseif (info.producer and info.producer.spellId) then
+					params.icon = spellLib.GetIcon(info.producer.spellId)
+				end
+
+				if (info.name) then params.name = FromWS(info.name) end
+			end
+		elseif (e.abilityId) then
+			local info = avatar.GetAbilityInfo(e.abilityId)
+			if (info and info.texture) then params.icon = info.texture end
+			if (info and info.name) then params.name = FromWS(info.name) end
+		end
+
+		params.realName = params.name
+
+		-- if (params.name == lastDMG and UI.get("Formatting", "IgnoreBloodlust")) then return end
+
+		if (params.target == avatar.GetId()) then
+			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
+				params.name =
+					FromWS(object.GetName(params.source))
+			end
+		elseif (params.source == avatar.GetId()) then
+			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
+				params.name =
+					FromWS(object.GetName(params.target))
+			end
+		end
+
+		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
+			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
+			if (not item or not item.enabled) then
+				return
+			else
+				if (not item[category]) then return end
+			end
+		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
+			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
+			if (item and item.enabled and item[category]) then return end
+		end
+
+		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then
+			params.nameClass = UI.get("LabelColors",
+				"CRIT_HEAL_NAME")
+		end
+		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then
+			params.amountClass = UI.get("NumColors",
+				"CRIT_HEAL_NUM")
+		end
+
+		if (UI.get("PanelSettings", "EnableCustomIcons") and GetGroupTexture("CUSTOM_ICONS", params.realName) ~= nil) then
+			params.icon = GetGroupTexture("CUSTOM_ICONS", params.realName)
+		end
+
+		pushToStack(params, stack)
+	end
+end
+
+local function onUnitDamage(e)
+	-- pushToChatSimple("onUnitDamage: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+
+	local params = {
+		source = e.source,
+		target = e.target,
+		amount = e.amount,
+		amountClass = UI.get("NumColors", "DMG_NUM") or "DamageYellow",
+		nameClass = UI.get("LabelColors", "DMG_NAME") or "ColorWhite",
+		icon = nil,
+		name = FromWS(e.ability)
+	}
+
+	local stack
+	local category = "any"
+
+	if (params.target == avatar.GetId()) then
+		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
+			params.name =
+				FromWS(object.GetName(params.source))
+		end
+		if (UI.get("Formatting", "HideIncMisses") and (e.isMiss or e.isDodge)) then return end
+
+		-- We got damage from player
+		if (unit.IsPlayer(params.source)) then
+			category = "incP"
+			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg"))) then return end
+		else -- We got damage from unit
+			category = "incU"
+			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg"))) then return end
+		end
+
+		stack = "inc"
+		if (UI.get("PanelSettings", "SwapPanels")) then
+			stack = "out"
+		end
+	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
+		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
+			params.name =
+				FromWS(object.GetName(params.target))
+		end
+		if (UI.get("Formatting", "HideOutMisses") and (e.isMiss or e.isDodge)) then return end
+
+		-- We did damage to player
+		if (unit.IsPlayer(params.target)) then
+			category = "outP"
+			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg"))) then return end
+		else -- We did damage to unit
+			category = "outU"
+			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg"))) then return end
+		end
+
+		stack = "out"
+		if (UI.get("PanelSettings", "SwapPanels")) then
+			stack = "inc"
+		end
+	else
+		return
+	end
+
+	if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
+		local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
+		if (not item or not item.enabled) then
+			return
+		else
+			if (not item[category]) then return end
+		end
+	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
+		local item = UI.getItem("IgnoredNames", FromWS(e.ability))
+		if (item and item.enabled and item[category]) then return end
+	end
+
+	local shelf_val = {
+
+	}
+
+	if (stack) then
+		if (e.buffId) then
+			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
+
+			if (info) then
+				if (info.texture) then
+					params.icon = info.texture
+				elseif (info.producer and info.producer.spellId) then
+					params.icon = spellLib.GetIcon(info.producer.spellId)
+				end
+				shelf_val.buffId = object.GetBuffInfo(e.buffId).buffId
+			end
+		end
+		if (not params.icon and e.spellId) then
+			params.icon = spellLib.GetIcon(e.spellId)
+			shelf_val.spellId = e.spellId
+		end
+		if (not params.icon and e.abilityId) then
+			local info = avatar.GetAbilityInfo(e.abilityId)
+			if (info and info.texture) then params.icon = info.texture end
+			shelf_val.abilityId = e.abilityId
+		end
+		if (not params.icon and e.mapModifierId) then
+			local info = cartographer.GetMapModifierInfo(e.mapModifierId)
+			if (info and info.image) then params.icon = info.image end
+			shelf_val.mapModifierId = e.mapModifierId
+		end
+
+		if (e.isFall) then
+			params.icon = GetGroupTexture("RELATED_TEXTURES", "FALL")
+			params.name = GetLocaleText("DMG_FALL")
+		end
+		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
+
+		-- pushToChatSimple(e.damageSource)
+
+		if (e.damageSource) then
+			if (e.damageSource == "DamageSource_BARRIER") then
+				params.name = GetLocaleText("DMG_BARRIER")
+				if (params.icon == nil) then
+					params.icon = GetGroupTexture("RELATED_TEXTURES", "BARRIER")
+				end
+			end
+		end
+
+		if (params.icon) then
+			UI.registerTexture(FromWS(e.ability), shelf_val)
+		elseif (UI.get("PanelSettings", "ReplacePlaceholder")) then
+			params.icon = GetGroupTexture("RELATED_TEXTURES", "UNKNOWN_ATTACK")
+		end
+
+		if (e.lethal and UI.get("LabelColors", "LETHAL_NAME") ~= "-") then
+			params.nameClass = UI.get("LabelColors",
+				"LETHAL_NAME")
+		end
+		if (e.lethal and UI.get("NumColors", "LETHAL_NUM") ~= "-") then
+			params.amountClass = UI.get("NumColors",
+				"LETHAL_NUM")
+		end
+
+		if (e.isCritical and UI.get("LabelColors", "CRIT_DMG_NAME")) then
+			params.nameClass = UI.get("LabelColors",
+				"CRIT_DMG_NAME")
+		end
+		if (e.isCritical and UI.get("NumColors", "CRIT_DMG_NUM")) then
+			params.amountClass = UI.get("NumColors",
+				"CRIT_DMG_NUM")
+		end
+
+		if (e.isDodge and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
+		if (e.isDodge and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
+
+		if (e.isMiss and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
+		if (e.isMiss and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
+
+		if (UI.get("PanelSettings", "EnableCustomIcons") and GetGroupTexture("CUSTOM_ICONS", FromWS(e.ability)) ~= nil) then
+			params.icon = GetGroupTexture("CUSTOM_ICONS", FromWS(e.ability))
+		end
+
+		pushToStack(params, stack)
+	end
+end
+
+local function onSlash(p)
 	local m = userMods.FromWString(p.text)
 	local split_string = {}
 	for w in m:gmatch("%S+") do table.insert(split_string, w) end
@@ -562,7 +540,7 @@ function ToggleDnd()
 	UI.dnd(dndEnabled)
 end
 
-function onCfgLeft()
+local function onCfgLeft()
 	if DnD:IsDragging() then
 		return
 	end
@@ -570,7 +548,7 @@ function onCfgLeft()
 	UI.toggle()
 end
 
-function onCfgRight()
+local function onCfgRight()
 	if DnD:IsDragging() then
 		return
 	end
@@ -578,31 +556,7 @@ function onCfgRight()
 	ToggleDnd()
 end
 
-function Init()
-	LANG = common.GetLocalization() or "rus"
-	UI.init("ShowCustomDD")
-
-	common.RegisterEventHandler(onUnitDamage, 'EVENT_UNIT_DAMAGE_RECEIVED')
-	common.RegisterEventHandler(onUnitHeal, 'EVENT_HEALING_RECEIVED')
-
-	common.RegisterEventHandler(onPlayEffectFinished, 'EVENT_EFFECT_FINISHED')
-	common.RegisterEventHandler(onSlash, 'EVENT_UNKNOWN_SLASH_COMMAND')
-	common.RegisterReactionHandler(onCfgLeft, "ConfigLeftClick")
-	common.RegisterReactionHandler(onCfgRight, "ConfigRightClick")
-
-	local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
-	DnD.Init(cfgBtn, cfgBtn, true)
-	DnD.Enable(cfgBtn, true)
-
-	setupUI()
-	setUpTemplates()
-
-	if (stateMainForm:GetChildUnchecked("ContextDamageVisualization", false) ~= nil) then
-		stateMainForm:GetChildChecked("ContextDamageVisualization", false):Show(false)
-	end
-end
-
-function setUpTemplates()
+local function setUpTemplates()
 	local maxTextSize = 1000
 
 	WtSetPlace(inc_template,
@@ -689,7 +643,95 @@ function setUpTemplates()
 	out_template:Show(false)
 end
 
-function setupUI()
+local function switchButtonState(widget, settings)
+	local prevState = settings.state
+	local newState = prevState
+
+	if (prevState == #(settings.states)) then
+		newState = 1
+	else
+		newState = newState + 1
+	end
+
+	settings.state = newState
+	settings.value = settings.states[newState]
+	widget:SetVal("label", ToWS(settings.value))
+
+	UI.save()
+	UI.print()
+end
+
+local function addShowCB(widget, settings, editline)
+	editline:SetFocus(false)
+	local text = editline:GetString()
+
+	UI.groupPush("ShowOnlyNames",
+		UI.createItemSetting(text, {
+			iconName = text,
+			checkboxes = {
+				{
+					name = "outP",
+					label = "CB_outP",
+					default = false
+				},
+				{
+					name = "incP",
+					label = "CB_incP",
+					default = false
+				},
+				{
+					name = "outU",
+					label = "CB_outU",
+					default = false
+				},
+				{
+					name = "incU",
+					label = "CB_incU",
+					default = false
+				},
+			}
+		}, true), true
+	)
+
+	UI.render()
+end
+
+local function addIgnoreCB(widget, settings, editline)
+	editline:SetFocus(false)
+	local text = editline:GetString()
+
+	UI.groupPush("IgnoredNames",
+		UI.createItemSetting(text, {
+			iconName = text,
+			checkboxes = {
+				{
+					name = "outP",
+					label = "CB_outP",
+					default = false
+				},
+				{
+					name = "incP",
+					label = "CB_incP",
+					default = false
+				},
+				{
+					name = "outU",
+					label = "CB_outU",
+					default = false
+				},
+				{
+					name = "incU",
+					label = "CB_incU",
+					default = false
+				},
+			}
+		}, true), true
+	)
+
+	UI.render()
+end
+
+local function setupUI()
 	UI.addGroup("PanelSettings", {
 		UI.createInput("MaxBars", {
 			maxChars = 3,
@@ -866,92 +908,28 @@ function setupUI()
 	UI.render()
 end
 
-function switchButtonState(widget, settings)
-	local prevState = settings.state
-	local newState = prevState
+function Init()
+	LANG = common.GetLocalization() or "rus"
+	UI.init("ShowCustomDD")
 
-	if (prevState == #(settings.states)) then
-		newState = 1
-	else
-		newState = newState + 1
+	common.RegisterEventHandler(onUnitDamage, 'EVENT_UNIT_DAMAGE_RECEIVED')
+	common.RegisterEventHandler(onUnitHeal, 'EVENT_HEALING_RECEIVED')
+
+	common.RegisterEventHandler(onPlayEffectFinished, 'EVENT_EFFECT_FINISHED')
+	common.RegisterEventHandler(onSlash, 'EVENT_UNKNOWN_SLASH_COMMAND')
+	common.RegisterReactionHandler(onCfgLeft, "ConfigLeftClick")
+	common.RegisterReactionHandler(onCfgRight, "ConfigRightClick")
+
+	local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
+	DnD.Init(cfgBtn, cfgBtn, true)
+	DnD.Enable(cfgBtn, true)
+
+	setupUI()
+	setUpTemplates()
+
+	if (stateMainForm:GetChildUnchecked("ContextDamageVisualization", false) ~= nil) then
+		stateMainForm:GetChildChecked("ContextDamageVisualization", false):Show(false)
 	end
-
-	settings.state = newState
-	settings.value = settings.states[newState]
-	widget:SetVal("label", ToWS(settings.value))
-
-	UI.save()
-	UI.print()
-end
-
-function addShowCB(widget, settings, editline)
-	editline:SetFocus(false)
-	local text = editline:GetString()
-
-	UI.groupPush("ShowOnlyNames",
-		UI.createItemSetting(text, {
-			iconName = text,
-			checkboxes = {
-				{
-					name = "outP",
-					label = "CB_outP",
-					default = false
-				},
-				{
-					name = "incP",
-					label = "CB_incP",
-					default = false
-				},
-				{
-					name = "outU",
-					label = "CB_outU",
-					default = false
-				},
-				{
-					name = "incU",
-					label = "CB_incU",
-					default = false
-				},
-			}
-		}, true), true
-	)
-
-	UI.render()
-end
-
-function addIgnoreCB(widget, settings, editline)
-	editline:SetFocus(false)
-	local text = editline:GetString()
-
-	UI.groupPush("IgnoredNames",
-		UI.createItemSetting(text, {
-			iconName = text,
-			checkboxes = {
-				{
-					name = "outP",
-					label = "CB_outP",
-					default = false
-				},
-				{
-					name = "incP",
-					label = "CB_incP",
-					default = false
-				},
-				{
-					name = "outU",
-					label = "CB_outU",
-					default = false
-				},
-				{
-					name = "incU",
-					label = "CB_incU",
-					default = false
-				},
-			}
-		}, true), true
-	)
-
-	UI.render()
 end
 
 if (avatar.IsExist()) then
