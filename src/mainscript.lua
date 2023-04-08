@@ -10,6 +10,48 @@ local STACK = {
 	['inc'] = {}
 }
 
+----------------------------------------------------------------------------------------------------
+-- AOPanel support
+
+local IsAOPanelEnabled = GetConfig("EnableAOPanel") or GetConfig("EnableAOPanel") == nil
+
+local function onAOPanelStart(p)
+	if IsAOPanelEnabled then
+		local SetVal = { val = userMods.ToWString("DD") }
+		local params = { header = SetVal, ptype = "button", size = 32 }
+		userMods.SendEvent("AOPANEL_SEND_ADDON",
+			{ name = common.GetAddonName(), sysName = common.GetAddonName(), param = params })
+
+		local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
+		if cfgBtn then
+			cfgBtn:Show(false)
+		end
+	end
+end
+
+local function onAOPanelLeftClick(p)
+	if p.sender == common.GetAddonName() then
+		UI.toggle()
+	end
+end
+
+local function onAOPanelRightClick(p)
+	if p.sender == common.GetAddonName() then
+		ToggleDnd()
+	end
+end
+
+local function onAOPanelChange(params)
+	if params.unloading and params.name == "UserAddon/AOPanelMod" then
+		local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
+		if cfgBtn then
+			cfgBtn:Show(true)
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+
 local function updatePlacement(stack)
 	for i = #STACK[stack], 1, -1 do
 		local v = STACK[stack][i]
@@ -539,6 +581,13 @@ function ToggleDnd()
 	inc_template:Show(dndEnabled)
 	inc_template:SetTransparentInput(not dndEnabled)
 
+
+	if (dndEnabled) then
+		Log("Drag & Drop - On.")
+	else
+		Log("Drag & Drop - Off.")
+	end
+
 	UI.dnd(dndEnabled)
 end
 
@@ -893,6 +942,7 @@ local function setupUI()
 end
 
 function Init()
+	LOGGER.Init()
 	LANG = common.GetLocalization() or "rus"
 	UI.init("ShowCustomDD")
 
@@ -903,6 +953,12 @@ function Init()
 	common.RegisterEventHandler(onSlash, 'EVENT_UNKNOWN_SLASH_COMMAND')
 	common.RegisterReactionHandler(onCfgLeft, "ConfigLeftClick")
 	common.RegisterReactionHandler(onCfgRight, "ConfigRightClick")
+
+	-- AOPanel
+	common.RegisterEventHandler(onAOPanelStart, "AOPANEL_START")
+	common.RegisterEventHandler(onAOPanelLeftClick, "AOPANEL_BUTTON_LEFT_CLICK")
+	common.RegisterEventHandler(onAOPanelRightClick, "AOPANEL_BUTTON_RIGHT_CLICK")
+	common.RegisterEventHandler(onAOPanelChange, "EVENT_ADDON_LOAD_STATE_CHANGED")
 
 	local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
 	DnD.Init(cfgBtn, cfgBtn, true)
