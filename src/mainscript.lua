@@ -17,7 +17,7 @@ function onPlayEffectFinished(e)
 			for w in e.wtOwner:GetName():gmatch('([^_]+)') do table.insert(split_string, w) end
 
 			if (TEMPLATE[split_string[1]]) then
-				e.wtOwner:SetName(e.wtOwner:GetName().."_fading")
+				e.wtOwner:SetName(e.wtOwner:GetName() .. "_fading")
 				fadePlate(e.wtOwner)
 			end
 		elseif (e.effectType == 1) then
@@ -30,17 +30,17 @@ function onPlayEffectFinished(e)
 				end
 			end
 		end
-	end	
+	end
 end
 
 function fadePlate(plate)
-	plate:PlayFadeEffect( 1.0, 0.0, 500 )
+	plate:PlayFadeEffect(1.0, 0.0, 500)
 end
 
 function destroyPlate(widget, stack)
 	widget:Show(false)
 
-	for k,v in pairs(STACK[stack]) do
+	for k, v in pairs(STACK[stack]) do
 		if (v:GetName() == widget:GetName()) then
 			table.remove(STACK[stack], k)
 			v:DestroyWidget()
@@ -55,21 +55,22 @@ function updatePlacement(stack)
 		local v = STACK[stack][i]
 		local tempPos = TEMPLATE[stack]:GetPlacementPlain()
 
-		tempPos.posY = tempPos.posY + (tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding"))*2)*(#STACK[stack] - i)
-		wtSetPlace(v, tempPos)
+		tempPos.posY = tempPos.posY +
+			(tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2) *
+			(#STACK[stack] - i)
+		WtSetPlace(v, tempPos)
 		local show = (#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars"))
 		v:Show(show)
-		
+
 		if (not show) then
 			table.remove(STACK[stack], i)
 			v:DestroyWidget()
 		end
-
 	end
 end
 
 function getTexture(name)
-	local group = common.GetAddonRelatedTextureGroup( "RELATED_TEXTURES" )
+	local group = common.GetAddonRelatedTextureGroup("RELATED_TEXTURES")
 
 	if group and group:HasTexture(name) then
 		return group:GetTexture(name)
@@ -79,7 +80,7 @@ function getTexture(name)
 end
 
 function getCustomIcon(name)
-	local group = common.GetAddonRelatedTextureGroup( "CUSTOM_ICONS" )
+	local group = common.GetAddonRelatedTextureGroup("CUSTOM_ICONS")
 
 	if group and group:HasTexture(name) then
 		return group:GetTexture(name)
@@ -89,7 +90,7 @@ function getCustomIcon(name)
 end
 
 function onUnitHeal(e)
-	-- pushToChatSimple("onUnitHeal: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitHeal: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.healerId,
@@ -107,40 +108,38 @@ function onUnitHeal(e)
 	local category = "any"
 
 	if (params.target == avatar.GetId()) then
-		-- Нас похилил игрок
-		if (unit.IsPlayer(params.source)) then 
+		-- пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		if (unit.IsPlayer(params.source)) then
 			category = "incP"
 			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerHeal"))) then return end
-		else -- Нас похилил моб
+		else -- пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			category = "incU"
 			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitHeal"))) then return end
 		end
 		stack = "inc"
 	elseif (params.source == avatar.GetId()) then
-
-		-- Похилили по игроку
-		if (unit.IsPlayer(params.target)) then 
+		-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		if (unit.IsPlayer(params.target)) then
 			category = "outP"
 			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal"))) then return end
-		else -- Похилили по юниту
+		else -- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			category = "outU"
 			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal"))) then return end
 		end
 
-		-- Похилили по игроку
+		-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerHeal")) and unit.IsPlayer(params.target)) then return end
-		-- Похилили по игроку
+		-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		if (tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitHeal")) and not unit.IsPlayer(params.target)) then return end
 		stack = "out"
 	end
 
 	if (stack) then
-
 		if (e.spellId) then
 			params.icon = spellLib.GetIcon(e.spellId)
-			params.name = fromWS(spellLib.GetDescription(e.spellId).name)
+			params.name = FromWS(spellLib.GetDescription(e.spellId).name)
 		elseif (e.buffId) then
-			local info = object.GetBuffInfo( e.buffId ) or avatar.GetBuffInfo(e.buffId)
+			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
 
 			if (info) then
 				if (info.texture) then
@@ -149,12 +148,12 @@ function onUnitHeal(e)
 					params.icon = spellLib.GetIcon(info.producer.spellId)
 				end
 
-				if (info.name) then params.name = fromWS(info.name) end
+				if (info.name) then params.name = FromWS(info.name) end
 			end
 		elseif (e.abilityId) then
-			local info = avatar.GetAbilityInfo( e.abilityId )
-			if (info and info.texture) then params.icon = texture end
-			if (info and info.name) then params.name = fromWS(info.name) end
+			local info = avatar.GetAbilityInfo(e.abilityId)
+			if (info and info.texture) then params.icon = info.texture end
+			if (info and info.name) then params.name = FromWS(info.name) end
 		end
 
 		params.realName = params.name
@@ -162,36 +161,48 @@ function onUnitHeal(e)
 		-- if (params.name == lastDMG and UI.get("Formatting", "IgnoreBloodlust")) then return end
 
 		if (params.target == avatar.GetId()) then
-			if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.source)) ~= "") then params.name = fromWS(object.GetName(params.source)) end
+			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
+				params.name =
+					FromWS(object.GetName(params.source))
+			end
 		elseif (params.source == avatar.GetId()) then
-			if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.target)) ~= "") then params.name = fromWS(object.GetName(params.target)) end
+			if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
+				params.name =
+					FromWS(object.GetName(params.target))
+			end
 		end
 
-		if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
-			local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
+		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
+			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
 			if (not item or not item.enabled) then
 				return
-			else 
+			else
 				if (not item[category]) then return end
 			end
 		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", fromWS(e.ability))
+			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
 			if (item and item.enabled and item[category]) then return end
 		end
 
-		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then params.nameClass = UI.get("LabelColors", "CRIT_HEAL_NAME") end
-		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then params.amountClass = UI.get("NumColors", "CRIT_HEAL_NUM") end
+		if (e.isCritical and UI.get("LabelColors", "CRIT_HEAL_NAME")) then
+			params.nameClass = UI.get("LabelColors",
+				"CRIT_HEAL_NAME")
+		end
+		if (e.isCritical and UI.get("NumColors", "CRIT_HEAL_NUM")) then
+			params.amountClass = UI.get("NumColors",
+				"CRIT_HEAL_NUM")
+		end
 
 		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(params.realName) ~= nil) then
 			params.icon = getCustomIcon(params.realName)
 		end
 
-		pushToStack(params, stack) 
+		pushToStack(params, stack)
 	end
 end
 
 function onUnitDamage(e)
-	-- pushToChatSimple("onUnitDamage: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitDamage: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.source,
@@ -200,21 +211,24 @@ function onUnitDamage(e)
 		amountClass = UI.get("NumColors", "DMG_NUM") or "DamageYellow",
 		nameClass = UI.get("LabelColors", "DMG_NAME") or "ColorWhite",
 		icon = nil,
-		name = fromWS(e.ability)
+		name = FromWS(e.ability)
 	}
 
 	local stack
 	local category = "any"
 
 	if (params.target == avatar.GetId()) then
-		if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.source)) ~= "") then params.name = fromWS(object.GetName(params.source)) end
+		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
+			params.name =
+				FromWS(object.GetName(params.source))
+		end
 		if (UI.get("Formatting", "HideIncMisses") and (e.isMiss or e.isDodge)) then return end
 
-		-- Нас ударил игрок
+		-- пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		if (unit.IsPlayer(params.source)) then
 			category = "incP"
 			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg"))) then return end
-		else -- Нас ударил моб
+		else -- пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			category = "incU"
 			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg"))) then return end
 		end
@@ -224,14 +238,17 @@ function onUnitDamage(e)
 			stack = "out"
 		end
 	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
-		if (UI.get("Formatting", "ReplaceByName") and fromWS(object.GetName(params.target)) ~= "") then params.name = fromWS(object.GetName(params.target)) end
+		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
+			params.name =
+				FromWS(object.GetName(params.target))
+		end
 		if (UI.get("Formatting", "HideOutMisses") and (e.isMiss or e.isDodge)) then return end
 
-		-- Ударили по игроку
-		if (unit.IsPlayer(params.target)) then 
+		-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		if (unit.IsPlayer(params.target)) then
 			category = "outP"
 			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg"))) then return end
-		else -- Ударили по игроку
+		else -- пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			category = "outU"
 			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg"))) then return end
 		end
@@ -244,15 +261,15 @@ function onUnitDamage(e)
 		return
 	end
 
-	if (UI.get("ShowOnlyNames", "ShowOnly") and not ( UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc") ) then
-		local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
+	if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
+		local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
 		if (not item or not item.enabled) then
 			return
-		else 
+		else
 			if (not item[category]) then return end
 		end
 	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-		local item = UI.getItem("IgnoredNames", fromWS(e.ability))
+		local item = UI.getItem("IgnoredNames", FromWS(e.ability))
 		if (item and item.enabled and item[category]) then return end
 	end
 
@@ -262,7 +279,7 @@ function onUnitDamage(e)
 
 	if (stack) then
 		if (e.buffId) then
-			local info = object.GetBuffInfo( e.buffId ) or avatar.GetBuffInfo(e.buffId)
+			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
 
 			if (info) then
 				if (info.texture) then
@@ -278,12 +295,12 @@ function onUnitDamage(e)
 			shelf_val.spellId = e.spellId
 		end
 		if (not params.icon and e.abilityId) then
-			local info = avatar.GetAbilityInfo( e.abilityId )
+			local info = avatar.GetAbilityInfo(e.abilityId)
 			if (info and info.texture) then params.icon = info.texture end
 			shelf_val.abilityId = e.abilityId
 		end
 		if (not params.icon and e.mapModifierId) then
-			local info = cartographer.GetMapModifierInfo( e.mapModifierId )
+			local info = cartographer.GetMapModifierInfo(e.mapModifierId)
 			if (info and info.image) then params.icon = info.image end
 			shelf_val.mapModifierId = e.mapModifierId
 		end
@@ -304,15 +321,30 @@ function onUnitDamage(e)
 				end
 			end
 		end
-		
-		if (params.icon) then UI.registerTexture(fromWS(e.ability), shelf_val)
-		elseif (UI.get("PanelSettings", "ReplacePlaceholder")) then params.icon = getTexture("UNKNOWN_ATTACK") end 
 
-		if (e.lethal and UI.get("LabelColors", "LETHAL_NAME") ~= "-") then params.nameClass = UI.get("LabelColors", "LETHAL_NAME") end
-		if (e.lethal and UI.get("NumColors", "LETHAL_NUM") ~= "-") then params.amountClass = UI.get("NumColors", "LETHAL_NUM") end
+		if (params.icon) then
+			UI.registerTexture(FromWS(e.ability), shelf_val)
+		elseif (UI.get("PanelSettings", "ReplacePlaceholder")) then
+			params.icon = getTexture("UNKNOWN_ATTACK")
+		end
 
-		if (e.isCritical and UI.get("LabelColors", "CRIT_DMG_NAME")) then params.nameClass = UI.get("LabelColors", "CRIT_DMG_NAME") end
-		if (e.isCritical and UI.get("NumColors", "CRIT_DMG_NUM")) then params.amountClass = UI.get("NumColors", "CRIT_DMG_NUM") end
+		if (e.lethal and UI.get("LabelColors", "LETHAL_NAME") ~= "-") then
+			params.nameClass = UI.get("LabelColors",
+				"LETHAL_NAME")
+		end
+		if (e.lethal and UI.get("NumColors", "LETHAL_NUM") ~= "-") then
+			params.amountClass = UI.get("NumColors",
+				"LETHAL_NUM")
+		end
+
+		if (e.isCritical and UI.get("LabelColors", "CRIT_DMG_NAME")) then
+			params.nameClass = UI.get("LabelColors",
+				"CRIT_DMG_NAME")
+		end
+		if (e.isCritical and UI.get("NumColors", "CRIT_DMG_NUM")) then
+			params.amountClass = UI.get("NumColors",
+				"CRIT_DMG_NUM")
+		end
 
 		if (e.isDodge and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
 		if (e.isDodge and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
@@ -320,11 +352,11 @@ function onUnitDamage(e)
 		if (e.isMiss and UI.get("LabelColors", "MISS_NAME")) then params.nameClass = UI.get("LabelColors", "MISS_NAME") end
 		if (e.isMiss and UI.get("NumColors", "MISS_NUM")) then params.amountClass = UI.get("NumColors", "MISS_NUM") end
 
-		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(fromWS(e.ability)) ~= nil) then
-			params.icon = getCustomIcon(fromWS(e.ability))
+		if (UI.get("PanelSettings", "EnableCustomIcons") and getCustomIcon(FromWS(e.ability)) ~= nil) then
+			params.icon = getCustomIcon(FromWS(e.ability))
 		end
 
-		pushToStack(params, stack) 
+		pushToStack(params, stack)
 	end
 end
 
@@ -334,22 +366,36 @@ function pushToStack(params, stack)
 
 	counter = counter + 1
 	local plate = mainForm:CreateWidgetByDesc(TEMPLATE[stack]:GetWidgetDesc())
-	plate:SetName(stack.."_"..tostring(counter))
+	plate:SetName(stack .. "_" .. tostring(counter))
 	plate:Show(true)
 
-	plate:SetBackgroundColor({r = 0.0, g = 0.0, b = 0.0, a = 0.0})
+	plate:SetBackgroundColor({ r = 0.0, g = 0.0, b = 0.0, a = 0.0 })
 	local tempPos = TEMPLATE[stack]:GetPlacementPlain()
-	wtSetPlace(plate, tempPos)
-	wtSetPlace(plate, {sizeY=tonumber(UI.get("PanelSettings", "IconSize"))+tonumber(UI.get("PanelSettings", "IconPadding"))*2, sizeX=300})
+	WtSetPlace(plate, tempPos)
+	WtSetPlace(plate,
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2,
+			sizeX = 300
+		})
 	table.insert(STACK[stack], plate)
 	updatePlacement(stack)
 
-	plate:PlayFadeEffect( 0.0, 1.0, 500 )
+	plate:PlayFadeEffect(0.0, 1.0, 500)
 
 	local background
 	if (UI.get("PanelBackground", "ShowBg")) then
-		background = CreateWG("PlateBg", "BG", plate, true, { alignX=0, sizeX=tempPos.sizeX, posX = 0, highPosX = 0, alignY = 0, sizeY=tempPos.sizeY, posY=0, highPosY=0})
-		background:SetBackgroundColor(UI.getGroupColor("PanelBackground"))
+		background = CreateWG("PlateBg", "BG", plate, true,
+			{
+				alignX = 0,
+				sizeX = tempPos.sizeX,
+				posX = 0,
+				highPosX = 0,
+				alignY = 0,
+				sizeY = tempPos.sizeY,
+				posY = 0,
+				highPosY = 0
+			})
+		background:SetBackgroundColor(UI.getGroupColor("PanelBackgroundColor"))
 		background:Show(true)
 	end
 
@@ -367,32 +413,54 @@ function pushToStack(params, stack)
 
 	if (UI.get("Formatting", "ShortNum")) then
 		local floatP = UI.get("Formatting", "FloatFormat")
-		if (floatP and floatP ~= "0") then floatP = "%."..floatP
-		else floatP = nil end
+		if (floatP and floatP ~= "0") then
+			floatP = "%." .. floatP
+		else
+			floatP = nil
+		end
 
 		if (UI.get("Formatting", "ShortenToMill") and _amount >= 1000000) then
 			if (floatP) then
-				_formatedAmount = fromWS(common.FormatFloat(_amount / 1000000, floatP..'f')).."M"
+				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000000, floatP .. 'f')) .. "M"
 			else
-				_formatedAmount = fromWS(common.FormatInt(math.round(_amount / 1000000), '%d')).."M"
+				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000000), '%d')) .. "M"
 			end
 		elseif (_amount >= 1000) then
 			if (floatP) then
-				_formatedAmount = fromWS(common.FormatFloat(_amount / 1000, floatP..'f')).."K"
+				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000, floatP .. 'f')) .. "K"
 			else
-				_formatedAmount = fromWS(common.FormatInt(math.round(_amount / 1000), '%d')).."K"
+				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000), '%d')) .. "K"
 			end
 		end
 	end
 
 	local maxTextSize = 1000
-	local fontSize = (tonumber(UI.get("PanelSettings", "IconSize"))/2 + 4)
+	local fontSize = (tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4)
 
 	if (stack == 'inc') then
-		wtSetPlace(plate:GetChildChecked("IconSpell", true), {sizeY=tonumber(UI.get("PanelSettings", "IconSize")), sizeX=tonumber(UI.get("PanelSettings", "IconSize")), posX=tonumber(UI.get("PanelSettings", "IconPadding")), highPosX=0})
+		WtSetPlace(plate:GetChildChecked("IconSpell", true),
+			{
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+				posX = tonumber(UI.get("PanelSettings", "IconPadding")),
+				highPosX = 0
+			})
 
-		local incLabel = CreateWG("Label", "CastName", plate, true, { alignX=0, sizeX=maxTextSize, posX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, highPosX = 0, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
-		incLabel:SetFormat (userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='"..tostring(fontSize).."' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>" ))
+		local incLabel = CreateWG("Label", "CastName", plate, true,
+			{
+				alignX = 0,
+				sizeX = maxTextSize,
+				posX = tonumber(UI.get("PanelSettings", "IconSize")) +
+					tonumber(UI.get("PanelSettings", "TextPadding")) * 2,
+				highPosX = 0,
+				alignY = 2,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				posY = 0,
+				highPosY = 0
+			})
+		incLabel:SetFormat(userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='" ..
+			tostring(fontSize) ..
+			"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
 		incLabel:SetVal("dmg", _formatedAmount)
 		incLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
 		if (not UI.get("PanelSettings", "HideLabels")) then
@@ -402,9 +470,29 @@ function pushToStack(params, stack)
 			incLabel:SetClassVal("class", params.nameClass or "ColorWhite")
 		end
 	else
-		wtSetPlace(plate:GetChildChecked("IconSpell", true), {sizeY=tonumber(UI.get("PanelSettings", "IconSize")), sizeX=tonumber(UI.get("PanelSettings", "IconSize")), posX=0, highPosX=tonumber(UI.get("PanelSettings", "IconPadding"))})
-		local outLabel = CreateWG("Label", "CastName", plate, true, { alignX=1, sizeX=maxTextSize, posX = 0, highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
-		outLabel:SetFormat (userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='"..tostring(fontSize).."' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>" ))
+		WtSetPlace(plate:GetChildChecked("IconSpell", true),
+			{
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+				posX = 0,
+				highPosX = tonumber(UI.get("PanelSettings", "IconPadding"))
+			})
+		local outLabel = CreateWG("Label", "CastName", plate, true,
+			{
+				alignX = 1,
+				sizeX = maxTextSize,
+				posX = 0,
+				highPosX = tonumber(UI.get("PanelSettings", "IconSize")) +
+					tonumber(UI.get("PanelSettings", "TextPadding")) *
+					2,
+				alignY = 2,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				posY = 0,
+				highPosY = 0
+			})
+		outLabel:SetFormat(userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='" ..
+			tostring(fontSize) ..
+			"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
 		outLabel:SetVal("dmg", _formatedAmount)
 		outLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
 
@@ -424,19 +512,28 @@ function pushToStack(params, stack)
 			w = (#(_formatedAmount)) * (fontSize * 0.61)
 		end
 		if (stack == "out") then
-			wtSetPlace(background, { 
-			sizeX=(tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w ),
-			alignX=1, highPosX = 0, posX = 0, sizeY = tonumber(UI.get("PanelSettings", "IconSize"))})
+			WtSetPlace(background, {
+				sizeX = (tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w),
+				alignX = 1,
+				highPosX = 0,
+				posX = 0,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize"))
+			})
 		else
-			wtSetPlace(background, { 
-				sizeX=(tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w ),
-				alignX=0, highPosX = 0, posX = 0, sizeY = tonumber(UI.get("PanelSettings", "IconSize"))})
+			WtSetPlace(background, {
+				sizeX = (tonumber(UI.get("PanelSettings", "IconPadding")) + tonumber(UI.get("PanelSettings", "TextPadding")) + tonumber(UI.get("PanelSettings", "IconSize")) + w),
+				alignX = 0,
+				highPosX = 0,
+				posX = 0,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize"))
+			})
 		end
 	end
 
 	plate:SetTransparentInput(true)
 	plate:SetClipContent(false)
-	plate:PlayResizeEffect(plate:GetPlacementPlain(), plate:GetPlacementPlain(), tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
+	plate:PlayResizeEffect(plate:GetPlacementPlain(), plate:GetPlacementPlain(),
+		tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
 end
 
 function onSlash(p)
@@ -446,7 +543,7 @@ function onSlash(p)
 
 	if (split_string[1]:lower() == "/ddtest" and split_string[2]) then
 		pushToStack({}, split_string[2])
-	elseif(split_string[1]:lower() == "/ddsettings") then
+	elseif (split_string[1]:lower() == "/ddsettings") then
 		UI.print()
 	end
 end
@@ -456,11 +553,11 @@ function ToggleDnd()
 
 	DnD.Enable(out_template, dndEnabled)
 	out_template:Show(dndEnabled)
-	out_template:SetTransparentInput( not dndEnabled )
+	out_template:SetTransparentInput(not dndEnabled)
 
 	DnD.Enable(inc_template, dndEnabled)
 	inc_template:Show(dndEnabled)
-	inc_template:SetTransparentInput( not dndEnabled )
+	inc_template:SetTransparentInput(not dndEnabled)
 
 	UI.dnd(dndEnabled)
 end
@@ -493,26 +590,48 @@ function Init()
 	common.RegisterReactionHandler(onCfgLeft, "ConfigLeftClick")
 	common.RegisterReactionHandler(onCfgRight, "ConfigRightClick")
 
-	local cfgBtn = mainForm:GetChildChecked( "ConfigButton", false )
-	DnD.Init(cfgBtn,cfgBtn, true)
+	local cfgBtn = mainForm:GetChildChecked("ConfigButton", false)
+	DnD.Init(cfgBtn, cfgBtn, true)
 	DnD.Enable(cfgBtn, true)
 
 	setupUI()
 	setUpTemplates()
 
-	if (stateMainForm:GetChildUnchecked( "ContextDamageVisualization", false ) ~= nil) then
-		stateMainForm:GetChildChecked( "ContextDamageVisualization", false ):Show(false)
+	if (stateMainForm:GetChildUnchecked("ContextDamageVisualization", false) ~= nil) then
+		stateMainForm:GetChildChecked("ContextDamageVisualization", false):Show(false)
 	end
 end
 
 function setUpTemplates()
 	local maxTextSize = 1000
 
-	wtSetPlace(inc_template, {sizeY=tonumber(UI.get("PanelSettings", "IconSize"))+tonumber(UI.get("PanelSettings", "IconPadding"))*2, sizeX=300})
-	wtSetPlace(inc_template:GetChildChecked("IconSpell", true), {sizeY=tonumber(UI.get("PanelSettings", "IconSize")), sizeX=tonumber(UI.get("PanelSettings", "IconSize")), posX=tonumber(UI.get("PanelSettings", "IconPadding")), highPosX=0})
+	WtSetPlace(inc_template,
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2,
+			sizeX = 300
+		})
+	WtSetPlace(inc_template:GetChildChecked("IconSpell", true),
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+			posX = tonumber(UI.get("PanelSettings", "IconPadding")),
+			highPosX = 0
+		})
 
-	local incLabel = CreateWG("Label", "CastName", inc_template, true, { alignX=0, sizeX=maxTextSize, posX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, highPosX = 0, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
-	incLabel:SetFormat (userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='"..tostring(tonumber(UI.get("PanelSettings", "IconSize"))/2 + 4).."' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>" ))
+	local incLabel = CreateWG("Label", "CastName", inc_template, true,
+		{
+			alignX = 0,
+			sizeX = maxTextSize,
+			posX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding")) * 2,
+			highPosX = 0,
+			alignY = 2,
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			posY = 0,
+			highPosY = 0
+		})
+	incLabel:SetFormat(userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='" ..
+		tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
+		"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
 	incLabel:SetVal("name", "Anafema")
 	incLabel:SetClassVal("class", "DamageYellow")
 
@@ -522,17 +641,40 @@ function setUpTemplates()
 	incLabel:SetVal("sep", " - ")
 	incLabel:SetClassVal("sep", "ColorWhite")
 
-	DnD.Init(inc_template,inc_template:GetChildChecked("IconSpell", true), true)
-	inc_template:SetTransparentInput( true )
+	DnD.Init(inc_template, inc_template:GetChildChecked("IconSpell", true), true)
+	inc_template:SetTransparentInput(true)
 	inc_template:Show(false)
 
 
-	wtSetPlace(out_template, {sizeY=tonumber(UI.get("PanelSettings", "IconSize"))+tonumber(UI.get("PanelSettings", "IconPadding"))*2, sizeX=300})
-	wtSetPlace(out_template:GetChildChecked("IconSpell", true), {sizeY=tonumber(UI.get("PanelSettings", "IconSize")), sizeX=tonumber(UI.get("PanelSettings", "IconSize")), highPosX=tonumber(UI.get("PanelSettings", "IconPadding")), posX=0})
+	WtSetPlace(out_template,
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2,
+			sizeX = 300
+		})
+	WtSetPlace(out_template:GetChildChecked("IconSpell", true),
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+			highPosX = tonumber(UI.get("PanelSettings", "IconPadding")),
+			posX = 0
+		})
 
-	local outLabel = CreateWG("Label", "CastName", out_template, true, { alignX=1, sizeX=maxTextSize, posX = 0, highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "TextPadding"))*2, alignY = 2, sizeY=tonumber(UI.get("PanelSettings", "IconSize")), posY=0, highPosY=0})
-	outLabel:SetFormat (userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='"..tostring(tonumber(UI.get("PanelSettings", "IconSize"))/2 + 4).."' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>" ))
-	
+	local outLabel = CreateWG("Label", "CastName", out_template, true,
+		{
+			alignX = 1,
+			sizeX = maxTextSize,
+			posX = 0,
+			highPosX = tonumber(UI.get("PanelSettings", "IconSize")) +
+				tonumber(UI.get("PanelSettings", "TextPadding")) * 2,
+			alignY = 2,
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			posY = 0,
+			highPosY = 0
+		})
+	outLabel:SetFormat(userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='" ..
+		tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
+		"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
+
 	outLabel:SetVal("name", "Anafema")
 	outLabel:SetClassVal("class", "DamageYellow")
 
@@ -543,7 +685,7 @@ function setUpTemplates()
 	outLabel:SetClassVal("sep", "ColorWhite")
 
 	DnD.Init(out_template, out_template:GetChildChecked("IconSpell", true), true)
-	out_template:SetTransparentInput( true )
+	out_template:SetTransparentInput(true)
 	out_template:Show(false)
 end
 
@@ -579,21 +721,21 @@ function setupUI()
 	})
 
 	UI.addGroup("NumColors", {
-		UI.createList("DMG_NUM", classListAll(), 2, true),
-		UI.createList("CRIT_DMG_NUM", classListAll(), 3, true),
-		UI.createList("HEAL_NUM", classListAll(), 4, true),
-		UI.createList("CRIT_HEAL_NUM", classListAll(), 5, true),
-		UI.createList("MISS_NUM", classListAll(), 6, true),
-		UI.createList("LETHAL_NUM", classListAll(true), 0, true),
+		UI.createList("DMG_NUM", UI.getClassList(), 2, true),
+		UI.createList("CRIT_DMG_NUM", UI.getClassList(), 3, true),
+		UI.createList("HEAL_NUM", UI.getClassList(), 4, true),
+		UI.createList("CRIT_HEAL_NUM", UI.getClassList(), 5, true),
+		UI.createList("MISS_NUM", UI.getClassList(), 6, true),
+		UI.createList("LETHAL_NUM", UI.getClassList(true), 0, true),
 	})
 
 	UI.addGroup("LabelColors", {
-		UI.createList("DMG_NAME", classListAll(), 1, true),
-		UI.createList("CRIT_DMG_NAME", classListAll(), 1, true),
-		UI.createList("HEAL_NAME", classListAll(), 1, true),
-		UI.createList("CRIT_HEAL_NAME", classListAll(), 1, true),
-		UI.createList("MISS_NAME", classListAll(), 1, true),
-		UI.createList("LETHAL_NAME", classListAll(true), 15, true),
+		UI.createList("DMG_NAME", UI.getClassList(), 1, true),
+		UI.createList("CRIT_DMG_NAME", UI.getClassList(), 1, true),
+		UI.createList("HEAL_NAME", UI.getClassList(), 1, true),
+		UI.createList("CRIT_HEAL_NAME", UI.getClassList(), 1, true),
+		UI.createList("MISS_NAME", UI.getClassList(), 1, true),
+		UI.createList("LETHAL_NAME", UI.getClassList(true), 15, true),
 	})
 
 	UI.addGroup("DamageFilteringP", {
@@ -641,22 +783,13 @@ function setupUI()
 			maxChars = 5,
 			filter = "_INT"
 		}, '100'),
-		UI.createSlider("r", {
-			stepsCount = 255,
-			width = 212,
-		}, 0),
-		UI.createSlider("g", {
-			stepsCount = 255,
-			width = 212,
-		}, 0),
-		UI.createSlider("b", {
-			stepsCount = 255,
-			width = 212,
-		}, 0),
-		UI.createSlider("a", {
-			stepsCount = 100,
-			width = 212,
-		}, 0),
+	})
+
+	UI.createColorGroup("PanelBackgroundColor", {
+		r = 0,
+		g = 0,
+		b = 0,
+		a = 50,
 	})
 
 	UI.addGroup("IgnoredNames", {
@@ -706,6 +839,7 @@ function setupUI()
 				"NumColors",
 				"LabelColors",
 				"PanelBackground",
+				"PanelBackgroundColor",
 			}
 		},
 		{
@@ -744,7 +878,7 @@ function switchButtonState(widget, settings)
 
 	settings.state = newState
 	settings.value = settings.states[newState]
-	widget:SetVal("label", toWS(settings.value))
+	widget:SetVal("label", ToWS(settings.value))
 
 	UI.save()
 	UI.print()
@@ -753,7 +887,7 @@ end
 function addShowCB(widget, settings, editline)
 	editline:SetFocus(false)
 	local text = editline:GetString()
-	
+
 	UI.groupPush("ShowOnlyNames",
 		UI.createItemSetting(text, {
 			iconName = text,
@@ -788,7 +922,7 @@ end
 function addIgnoreCB(widget, settings, editline)
 	editline:SetFocus(false)
 	local text = editline:GetString()
-	
+
 	UI.groupPush("IgnoredNames",
 		UI.createItemSetting(text, {
 			iconName = text,
@@ -820,6 +954,8 @@ function addIgnoreCB(widget, settings, editline)
 	UI.render()
 end
 
-if (avatar.IsExist()) then Init()
-else common.RegisterEventHandler(Init, "EVENT_AVATAR_CREATED")	
+if (avatar.IsExist()) then
+	Init()
+else
+	common.RegisterEventHandler(Init, "EVENT_AVATAR_CREATED")
 end

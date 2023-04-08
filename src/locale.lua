@@ -7,13 +7,13 @@ Global("LOCALES", {})
 function getLocaleText(name)
     local lang = LANG or "rus"
 
-	local l = LOCALES[lang]
+    local l = LOCALES[lang]
 
-	if l then
-		return l[name] or name
+    if l then
+        return l[name] or name
     else
         return name
-	end
+    end
 end
 
 LOCALES = {
@@ -75,13 +75,11 @@ LOCALES = {
         ["SETTING_MinOutPlayerHeal"] = "Минимальное отображение исходящего лечения",
         ["SETTING_MinIncPlayerDmg"] = "Минимальное отображение входящего урона",
         ["SETTING_MinIncPlayerHeal"] = "Минимальное отображение входящего лечения",
-
         ["GROUP_DamageFilteringU"] = "Фильтрация [Мобы]",
         ["SETTING_MinOutUnitDmg"] = "Минимальное отображение исходящего урона",
         ["SETTING_MinOutUnitHeal"] = "Минимальное отображение исходящего лечения",
         ["SETTING_MinIncUnitDmg"] = "Минимальное отображение входящего урона",
         ["SETTING_MinIncUnitHeal"] = "Минимальное отображение входящего лечения",
-
         ["GROUP_PanelBackground"] = "Подложка",
         ["SETTING_ShowBg"] = "Отображение подложки",
         ["SETTING_UseBgCustomWidth"] = "Задать свою ширину",
@@ -90,6 +88,7 @@ LOCALES = {
         ["SETTING_g"] = "Зеленый канал",
         ["SETTING_b"] = "Синий канал",
         ["SETTING_a"] = "Альфа канал",
+        ["GROUP_PanelBackgroundColor"] = "Цвет подложки",
 
         ["GROUP_IgnoredNames"] = "Показать всё кроме",
         ["SETTING_EnableIgnore"] = "Включить фильтр",

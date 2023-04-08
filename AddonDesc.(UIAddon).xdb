@@ -3,11 +3,14 @@
 	<Name>ShowCustomDD</Name>
 	<AutoStart>true</AutoStart>
 	<ScriptFileRefs>
-		<Item href="compiled/locale.luac"/>
-		<Item href="compiled/LibDnD.luac"/>
-		<Item href="compiled/utils.luac"/>
-		<Item href="compiled/settingsUI.luac"/>
-		<Item href="compiled/mainscript.luac"/>
+		<Item href="src/locale.lua"/>
+
+		<Item href="src/libs/Logger.lua"/>
+		<Item href="src/libs/Utils.lua"/>
+		<Item href="src/libs/DnD.lua"/>
+		<Item href="src/libs/SettingsUI.lua"/>
+
+		<Item href="src/mainscript.lua"/>
 	</ScriptFileRefs>
 	<MainFormId>Main</MainFormId>
 	<Forms>

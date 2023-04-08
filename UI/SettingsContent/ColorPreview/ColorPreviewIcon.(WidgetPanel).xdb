@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <WidgetPanel>
-	<Name>GroupHeader</Name>
+	<Name>ColorPreviewIcon</Name>
 	<Priority>1</Priority>
-	<!-- <BackLayer href="Header.(WidgetLayerTiledTexture).xdb#xpointer(/WidgetLayerTiledTexture)" /> -->
-	<Children>
-		<Item href="HeaderText.(WidgetTextView).xdb#xpointer(/WidgetTextView)" />
-	</Children>
+	<BackLayer href="Textures/Simple.(WidgetLayerSimpleTexture).xdb#xpointer(/WidgetLayerSimpleTexture)" />
 	<Placement>
 		<QuantumScale>false</QuantumScale>
 		<X>
-			<Align>WIDGET_ALIGN_CENTER</Align>
-			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
-			<Size>550</Size>
-		</X>
-		<Y>
-			<Align>WIDGET_ALIGN_LOW</Align>
+			<Align>WIDGET_ALIGN_HIGH</Align>
 			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
 			<Pos>0</Pos>
-			<Size>35</Size>
+			<HighPos>8</HighPos>
+			<Size>24</Size>
+		</X>
+		<Y>
+			<Align>WIDGET_ALIGN_CENTER</Align>
+			<Sizing>WIDGET_SIZING_DEFAULT</Sizing>
+			<Pos>0</Pos>
+			<HighPos>0</HighPos>
+			<Size>24</Size>
 		</Y>
 	</Placement>
 	<Visible>true</Visible>

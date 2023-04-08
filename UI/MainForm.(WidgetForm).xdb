@@ -10,7 +10,8 @@
 		<Item href="SettingsContent/Button/ButtonPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/ButtonInput/ButtonInputPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 		<Item href="SettingsContent/ItemSetting/ItemSettingPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
-
+		<Item href="SettingsContent/ColorPreview/ColorPreviewPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
+		<Item href="SettingsContent/SimpleLabel/SimpleLabelPanel.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
 
 		<Item href="ConfigButton/ConfigButton.(WidgetButton).xdb#xpointer(/WidgetButton)" />
 		<Item href="Addon/Bar/Bar.(WidgetPanel).xdb#xpointer(/WidgetPanel)" />
