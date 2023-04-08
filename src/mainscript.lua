@@ -10,6 +10,25 @@ local STACK = {
 	['inc'] = {}
 }
 
+local function updatePlacement(stack)
+	for i = #STACK[stack], 1, -1 do
+		local v = STACK[stack][i]
+		local tempPos = TEMPLATE[stack]:GetPlacementPlain()
+
+		tempPos.posY = tempPos.posY +
+			(tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2) *
+			(#STACK[stack] - i)
+		WtSetPlace(v, tempPos)
+		local show = (#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars"))
+		v:Show(show)
+
+		if (not show) then
+			table.remove(STACK[stack], i)
+			v:DestroyWidget()
+		end
+	end
+end
+
 local function fadePlate(plate)
 	plate:PlayFadeEffect(1.0, 0.0, 500)
 end
@@ -46,25 +65,6 @@ local function onPlayEffectFinished(e)
 					destroyPlate(e.wtOwner, split_string[1])
 				end
 			end
-		end
-	end
-end
-
-local function updatePlacement(stack)
-	for i = #STACK[stack], 1, -1 do
-		local v = STACK[stack][i]
-		local tempPos = TEMPLATE[stack]:GetPlacementPlain()
-
-		tempPos.posY = tempPos.posY +
-			(tonumber(UI.get("PanelSettings", "IconSize")) + tonumber(UI.get("PanelSettings", "IconPadding")) * 2) *
-			(#STACK[stack] - i)
-		WtSetPlace(v, tempPos)
-		local show = (#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars"))
-		v:Show(show)
-
-		if (not show) then
-			table.remove(STACK[stack], i)
-			v:DestroyWidget()
 		end
 	end
 end
