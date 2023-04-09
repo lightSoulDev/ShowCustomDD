@@ -942,7 +942,6 @@ local function setupUI()
 end
 
 function Init()
-	LOGGER.Init()
 	LANG = common.GetLocalization() or "rus"
 	UI.init("ShowCustomDD")
 
