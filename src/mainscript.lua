@@ -72,7 +72,7 @@ local function updatePlacement(stack)
 end
 
 local function fadePlate(plate)
-	plate:PlayFadeEffect(1.0, 0.0, 500)
+	plate:PlayFadeEffect(1.0, 0.0, 500, EA_MONOTONOUS_INCREASE, true)
 end
 
 local function destroyPlate(widget, stack)
@@ -131,7 +131,7 @@ local function pushToStack(params, stack)
 	table.insert(STACK[stack], plate)
 	updatePlacement(stack)
 
-	plate:PlayFadeEffect(0.0, 1.0, 500)
+	plate:PlayFadeEffect(0.0, 1.0, 500, EA_MONOTONOUS_INCREASE, true)
 
 	local background
 	if (UI.get("PanelBackground", "ShowBg")) then
@@ -286,7 +286,7 @@ local function pushToStack(params, stack)
 	plate:SetTransparentInput(true)
 	plate:SetClipContent(false)
 	plate:PlayResizeEffect(plate:GetPlacementPlain(), plate:GetPlacementPlain(),
-		tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
+		tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE, true)
 end
 
 local function onUnitHeal(e)
@@ -965,9 +965,9 @@ function Init()
 
 	setupUI()
 	setUpTemplates()
-
-	if (stateMainForm:GetChildUnchecked("ContextDamageVisualization", false) ~= nil) then
-		stateMainForm:GetChildChecked("ContextDamageVisualization", false):Show(false)
+	local damageVis = common.GetAddonMainForm("ContextDamageVisualization")
+	if (damageVis ~= nil) then
+		damageVis:Show(false)
 	end
 end
 
