@@ -409,16 +409,23 @@ local function onUnitDamage(e)
 		amountClass = UI.get("NumColors", "DMG_NUM") or "DamageYellow",
 		nameClass = UI.get("LabelColors", "DMG_NAME") or "ColorWhite",
 		icon = nil,
-		name = FromWS(e.ability)
+		name = ""
 	}
+
+	if (e.source == nil or e.target == nil) then
+		return
+	end
+
+	if (e.ability ~= nil) then
+		params.name = FromWS(e.ability)
+	end
 
 	local stack
 	local category = "any"
 
 	if (params.target == avatar.GetId()) then
 		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
-			params.name =
-				FromWS(object.GetName(params.source))
+			params.name = FromWS(object.GetName(params.source))
 		end
 		if (UI.get("Formatting", "HideIncMisses") and (e.isMiss or e.isDodge)) then return end
 
@@ -435,7 +442,7 @@ local function onUnitDamage(e)
 		if (UI.get("PanelSettings", "SwapPanels")) then
 			stack = "out"
 		end
-	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
+	elseif (params.source ~= nil and (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source)))) then
 		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
 			params.name =
 				FromWS(object.GetName(params.target))
