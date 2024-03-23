@@ -11,14 +11,14 @@
 		<Item href="src/libs/SettingsUI.lua"/>
 
 		<Item href="src/mainscript.lua"/>
+		<!-- <Item href="demo_src/UI/locale.lua"/>
+
+		<Item href="demo_src/UI/utils.lua"/>
+		<Item href="demo_src/LibDnD.lua"/>
+		<Item href="demo_src/UI/settingsUI.lua"/>
+
+		<Item href="demo_src/mainscript.lua"/> -->
 	</ScriptFileRefs>
-	<MainFormId>Main</MainFormId>
-	<Forms>
-		<Item>
-			<Id>Main</Id>
-			<Form href="UI/MainForm.(WidgetForm).xdb"/>
-		</Item>
-	</Forms>
 <addon_name>ShowCustomDD</addon_name>
 <localizedNameFileRef href="info/name.txt"/>
 <localizedDescFileRef href="info/desc.txt"/>
@@ -32,4 +32,7 @@
 		<textures href="CustomIcons.(UIRelatedTextures).xdb#xpointer(/UIRelatedTextures)"/>
 	</Item>
 </texturesGroups>
+<Form href="UI/MainForm.(WidgetForm).xdb"/>
+<addon_date>1684259514</addon_date>
+<addon_link>https://alloder.pro/files/file/724-showcustomdd/?do=download&amp;r=24252&amp;confirm=1&amp;t=1&amp;csrfKey=</addon_link>
 </UIAddon>

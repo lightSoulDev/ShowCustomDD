@@ -34,7 +34,7 @@ function onPlayEffectFinished(e)
 end
 
 function fadePlate(plate)
-	plate:PlayFadeEffect(1.0, 0.0, 500)
+	plate:PlayFadeEffect(1.0, 0.0, 500, EA_MONOTONOUS_INCREASE, true)
 end
 
 function destroyPlate(widget, stack)
@@ -56,7 +56,7 @@ function updatePlacement(stack)
 		local tempPos = TEMPLATE[stack]:GetPlacementPlain()
 
 		tempPos.posY = tempPos.posY + (tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2) * (#STACK[stack] - i)
-		wtSetPlace(v, tempPos)
+		WtSetPlace(v, tempPos)
 		local show = (#STACK[stack] + 1 - i) <= tonumber(UI.get("PanelSettings", "MaxBars"))
 		v:Show(show)
 
@@ -88,7 +88,7 @@ function getCustomIcon(name)
 end
 
 function onUnitHeal(e)
-	-- pushToChatSimple("onUnitHeal: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitHeal: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.healerId,
@@ -100,24 +100,22 @@ function onUnitHeal(e)
 		name = ""
 	}
 
+	if (params.target == nil or params.source == nil) then return end
+
 	if (UI.get("Formatting", "IgnoreBloodlust") and e.runeResisted == 0 and object.IsInCombat(avatar.GetId())) then return end
 
 	local stack
 	local category = "any"
 
 	if (params.target == avatar.GetId()) then
-		-- ��� ������� �����
 		if (unit.IsPlayer(params.source)) then
 			category = "incP"
-		else -- ��� ������� ���
 			category = "incU"
 		end
 		stack = "inc"
 	elseif (params.source == avatar.GetId()) then
-		-- �������� �� ������
 		if (unit.IsPlayer(params.target)) then
 			category = "outP"
-		else -- �������� �� �����
 			category = "outU"
 		end
 
@@ -127,7 +125,7 @@ function onUnitHeal(e)
 	if (stack) then
 		if (e.spellId) then
 			params.icon = spellLib.GetIcon(e.spellId)
-			params.name = fromWS(spellLib.GetDescription(e.spellId).name)
+			params.name = FromWS(spellLib.GetDescription(e.spellId).name)
 		elseif (e.buffId) then
 			local info = object.GetBuffInfo(e.buffId) or avatar.GetBuffInfo(e.buffId)
 
@@ -138,25 +136,25 @@ function onUnitHeal(e)
 					params.icon = spellLib.GetIcon(info.producer.spellId)
 				end
 
-				if (info.name) then params.name = fromWS(info.name) end
+				if (info.name) then params.name = FromWS(info.name) end
 			end
 		elseif (e.abilityId) then
 			local info = avatar.GetAbilityInfo(e.abilityId)
 			if (info and info.texture) then params.icon = info.texture end
-			if (info and info.name) then params.name = fromWS(info.name) end
+			if (info and info.name) then params.name = FromWS(info.name) end
 		end
 
 		params.realName = params.name
 
 		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-			local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
+			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
 			if (not item or not item.enabled) then
 				return
 			else
 				if (not item[category]) then return end
 			end
 		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", fromWS(e.ability))
+			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
 			if (item and item.enabled and item[category]) then return end
 		end
 
@@ -167,7 +165,7 @@ function onUnitHeal(e)
 end
 
 function onUnitDamage(e)
-	-- pushToChatSimple("onUnitDamage: "..fromWS(e.ability).." - ("..fromWS(object.GetName(e.target))..") from ("..fromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
+	-- pushToChatSimple("onUnitDamage: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
 
 	local params = {
 		source = e.source,
@@ -176,11 +174,13 @@ function onUnitDamage(e)
 		amountClass = "DamageYellow",
 		nameClass = "ColorWhite",
 		icon = nil,
-		name = fromWS(e.ability)
+		name = FromWS(e.ability)
 	}
 
 	local stack
 	local category = "any"
+
+	if (params.target == nil or params.source == nil) then return end
 
 	if (params.target == avatar.GetId()) then
 		-- ��� ������ �����
@@ -205,14 +205,14 @@ function onUnitDamage(e)
 	end
 
 	if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-		local item = UI.getItem("ShowOnlyNames", fromWS(e.ability))
+		local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
 		if (not item or not item.enabled) then
 			return
 		else
 			if (not item[category]) then return end
 		end
 	elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-		local item = UI.getItem("IgnoredNames", fromWS(e.ability))
+		local item = UI.getItem("IgnoredNames", FromWS(e.ability))
 		if (item and item.enabled and item[category]) then return end
 	end
 
@@ -250,22 +250,19 @@ function onUnitDamage(e)
 
 		if (e.isFall) then
 			params.icon = getTexture("FALL")
-			params.name = getLocaleText("DMG_FALL")
+			params.name = GetLocaleText("DMG_FALL")
 		end
-		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
-
-		-- pushToChatSimple(e.damageSource)
 
 		if (e.damageSource) then
 			if (e.damageSource == "DamageSource_BARRIER") then
-				params.name = getLocaleText("DMG_BARRIER")
+				params.name = GetLocaleText("DMG_BARRIER")
 				if (params.icon == nil) then
 					params.icon = getTexture("BARRIER")
 				end
 			end
 		end
 
-		if (params.icon) then UI.registerTexture(fromWS(e.ability), shelf_val) end
+		if (params.icon) then UI.registerTexture(FromWS(e.ability), shelf_val) end
 
 		if (e.isCritical) then params.amountClass = "DamageRed" end
 
@@ -286,12 +283,12 @@ function pushToStack(params, stack)
 
 	plate:SetBackgroundColor({ r = 0.0, g = 0.0, b = 0.0, a = 0.0 })
 	local tempPos = TEMPLATE[stack]:GetPlacementPlain()
-	wtSetPlace(plate, tempPos)
-	wtSetPlace(plate, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
+	WtSetPlace(plate, tempPos)
+	WtSetPlace(plate, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
 	table.insert(STACK[stack], plate)
 	updatePlacement(stack)
 
-	plate:PlayFadeEffect(0.0, 1.0, 500)
+	plate:PlayFadeEffect(0.0, 1.0, 500, EA_MONOTONOUS_INCREASE, true)
 
 	if (params.icon) then
 		plate:GetChildChecked("IconSpell", true):SetBackgroundTexture(params.icon)
@@ -305,49 +302,102 @@ function pushToStack(params, stack)
 
 	local _formatedAmount = tostring(_amount)
 
+	if (UI.get("Formatting", "ShortNum")) then
+		local floatP = UI.get("Formatting", "FloatFormat")
+		if (floatP and floatP ~= "0") then
+			floatP = "%." .. floatP
+		else
+			floatP = nil
+		end
+
+		if (UI.get("Formatting", "ShortenToMill") and _amount >= 1000000) then
+			if (floatP) then
+				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000000, floatP .. 'f')) .. "M"
+			else
+				---@diagnostic disable-next-line: undefined-field
+				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000000), '%d')) .. "M"
+			end
+		elseif (_amount >= 1000) then
+			if (floatP) then
+				_formatedAmount = FromWS(common.FormatFloat(_amount / 1000, floatP .. 'f')) .. "K"
+			else
+				---@diagnostic disable-next-line: undefined-field
+				_formatedAmount = FromWS(common.FormatInt(math.round(_amount / 1000), '%d')) .. "K"
+			end
+		end
+	end
+
 	local maxTextSize = 1000
 	local fontSize = (tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4)
 
 	if (stack == 'inc') then
-		wtSetPlace(plate:GetChildChecked("IconSpell", true),
-		{ sizeY = tonumber(UI.get("PanelSettings", "IconSize")), sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
-			posX = 0, highPosX = 0 })
+		WtSetPlace(plate:GetChildChecked("IconSpell", true),
+			{
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+				posX = 0,
+				highPosX = 0
+			})
 
 		local incLabel = CreateWG("Label", "CastName", plate, true,
-		{ alignX = 0, sizeX = maxTextSize, posX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2, highPosX = 0,
-			alignY = 2, sizeY = tonumber(UI.get("PanelSettings", "IconSize")), posY = 0, highPosY = 0 })
+			{
+				alignX = 0,
+				sizeX = maxTextSize,
+				posX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
+				highPosX = 0,
+				alignY = 2,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				posY = 0,
+				highPosY = 0
+			})
 		incLabel:SetFormat(userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='" ..
-		tostring(fontSize) ..
-		"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
+			tostring(fontSize) ..
+			"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
 		incLabel:SetVal("dmg", _formatedAmount)
 		incLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
-		incLabel:SetVal("sep", " - ")
-		incLabel:SetClassVal("sep", "ColorWhite")
-		incLabel:SetVal("name", _name)
-		incLabel:SetClassVal("class", params.nameClass or "ColorWhite")
+		if (not UI.get("PanelSettings", "HideLabels")) then
+			incLabel:SetVal("sep", " - ")
+			incLabel:SetClassVal("sep", "ColorWhite")
+			incLabel:SetVal("name", _name)
+			incLabel:SetClassVal("class", params.nameClass or "ColorWhite")
+		end
 	else
-		wtSetPlace(plate:GetChildChecked("IconSpell", true),
-		{ sizeY = tonumber(UI.get("PanelSettings", "IconSize")), sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
-			posX = 0, highPosX = 0 })
+		WtSetPlace(plate:GetChildChecked("IconSpell", true),
+			{
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+				posX = 0,
+				highPosX = 0
+			})
 		local outLabel = CreateWG("Label", "CastName", plate, true,
-		{ alignX = 1, sizeX = maxTextSize, posX = 0, highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
-			alignY = 2, sizeY = tonumber(UI.get("PanelSettings", "IconSize")), posY = 0, highPosY = 0 })
+			{
+				alignX = 1,
+				sizeX = maxTextSize,
+				posX = 0,
+				highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
+				alignY = 2,
+				sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+				posY = 0,
+				highPosY = 0
+			})
 		outLabel:SetFormat(userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='" ..
-		tostring(fontSize) ..
-		"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
+			tostring(fontSize) ..
+			"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
 		outLabel:SetVal("dmg", _formatedAmount)
 		outLabel:SetClassVal("dmg", params.amountClass or "ColorRed")
 
-		outLabel:SetVal("name", _name)
-		outLabel:SetClassVal("class", params.nameClass or "ColorWhite")
-		outLabel:SetVal("sep", " - ")
-		outLabel:SetClassVal("sep", "ColorWhite")
+		if (not UI.get("PanelSettings", "HideLabels")) then
+			outLabel:SetVal("name", _name)
+			outLabel:SetClassVal("class", params.nameClass or "ColorWhite")
+			outLabel:SetVal("sep", " - ")
+			outLabel:SetClassVal("sep", "ColorWhite")
+		end
 	end
 
 	plate:SetTransparentInput(true)
 	plate:SetClipContent(false)
 	plate:PlayResizeEffect(plate:GetPlacementPlain(), plate:GetPlacementPlain(),
-	tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE)
+		tonumber(UI.get("PanelSettings", "ShowTime")), EA_MONOTONOUS_INCREASE, true)
 end
 
 function onSlash(p)
@@ -419,17 +469,29 @@ end
 function setUpTemplates()
 	local maxTextSize = 1000
 
-	wtSetPlace(inc_template, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
-	wtSetPlace(inc_template:GetChildChecked("IconSpell", true),
-	{ sizeY = tonumber(UI.get("PanelSettings", "IconSize")), sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
-		posX = 0, highPosX = 0 })
+	WtSetPlace(inc_template, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
+	WtSetPlace(inc_template:GetChildChecked("IconSpell", true),
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+			posX = 0,
+			highPosX = 0
+		})
 
 	local incLabel = CreateWG("Label", "CastName", inc_template, true,
-	{ alignX = 0, sizeX = maxTextSize, posX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2, highPosX = 0,
-		alignY = 2, sizeY = tonumber(UI.get("PanelSettings", "IconSize")), posY = 0, highPosY = 0 })
+		{
+			alignX = 0,
+			sizeX = maxTextSize,
+			posX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
+			highPosX = 0,
+			alignY = 2,
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			posY = 0,
+			highPosY = 0
+		})
 	incLabel:SetFormat(userMods.ToWString("<html><body alignx='left' aligny='middle' fontsize='" ..
-	tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
-	"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
+		tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
+		"' outline='1' shadow='1'><rs class='dmg'><r name='dmg'/></rs><rs class='sep'><r name='sep'/></rs><rs class='class'><r name='name'/></rs></body></html>"))
 	incLabel:SetVal("name", "Anafema")
 	incLabel:SetClassVal("class", "DamageYellow")
 
@@ -444,17 +506,29 @@ function setUpTemplates()
 	inc_template:Show(false)
 
 
-	wtSetPlace(out_template, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
-	wtSetPlace(out_template:GetChildChecked("IconSpell", true),
-	{ sizeY = tonumber(UI.get("PanelSettings", "IconSize")), sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
-		highPosX = 0, posX = 0 })
+	WtSetPlace(out_template, { sizeY = tonumber(UI.get("PanelSettings", "IconSize")) + 0 * 2, sizeX = 300 })
+	WtSetPlace(out_template:GetChildChecked("IconSpell", true),
+		{
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			sizeX = tonumber(UI.get("PanelSettings", "IconSize")),
+			highPosX = 0,
+			posX = 0
+		})
 
 	local outLabel = CreateWG("Label", "CastName", out_template, true,
-	{ alignX = 1, sizeX = maxTextSize, posX = 0, highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
-		alignY = 2, sizeY = tonumber(UI.get("PanelSettings", "IconSize")), posY = 0, highPosY = 0 })
+		{
+			alignX = 1,
+			sizeX = maxTextSize,
+			posX = 0,
+			highPosX = tonumber(UI.get("PanelSettings", "IconSize")) + 2 * 2,
+			alignY = 2,
+			sizeY = tonumber(UI.get("PanelSettings", "IconSize")),
+			posY = 0,
+			highPosY = 0
+		})
 	outLabel:SetFormat(userMods.ToWString("<html><body alignx='right' aligny='middle' fontsize='" ..
-	tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
-	"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
+		tostring(tonumber(UI.get("PanelSettings", "IconSize")) / 2 + 4) ..
+		"' outline='1' shadow='1'><rs class='class'><r name='name'/></rs><rs class='sep'><r name='sep'/></rs><rs class='dmg'><r name='dmg'/></rs></body></html>"))
 
 	outLabel:SetVal("name", "Anafema")
 	outLabel:SetClassVal("class", "DamageYellow")
@@ -481,10 +555,14 @@ function setupUI()
 			maxChars = 6,
 			filter = "_INT"
 		}, '8000'),
+		UI.createCheckBox("HideLabels", false),
 	})
 
 	UI.addGroup("Formatting", {
 		UI.createCheckBox("IgnoreBloodlust", true),
+		UI.createCheckBox("ShortNum", true),
+		UI.createCheckBox("ShortenToMill", true),
+		UI.createList("FloatFormat", range(0, 2, 1), 2, false),
 	})
 
 	UI.setTabs({

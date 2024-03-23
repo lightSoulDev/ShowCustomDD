@@ -63,14 +63,6 @@ function DnD.Init(wtMovable, wtReacting, fUseCfg, fLockedToParentArea, Padding, 
 		HX = InitialPlace.highPosX,
 		HY = InitialPlace.highPosY
 	}
-	local mt = getmetatable(wtReacting)
-	if not mt._Show then
-		mt._Show = mt.Show
-		mt.Show = function(self, show)
-			self:_Show(show);
-			DnD.Register(self, show)
-		end
-	end
 	DnD.Register(wtReacting, true)
 end
 
@@ -291,8 +283,12 @@ function DnD.StopDragging(fSuccess)
 		mission.DNDConfirmDropAttempt()
 		if DnD.Widgets[DnD.Dragging].fUseCfg then
 			SetConfig(DnD.Widgets[DnD.Dragging].CfgName,
-				{ posX = DnD.Place.posX, posY = DnD.Place.posY, highPosX = DnD.Place.highPosX,
-					highPosY = DnD.Place.highPosY })
+				{
+					posX = DnD.Place.posX,
+					posY = DnD.Place.posY,
+					highPosX = DnD.Place.highPosX,
+					highPosY = DnD.Place.highPosY
+				})
 		end
 		DnD.Widgets[DnD.Dragging].Initial = {
 			X = DnD.Place.posX,

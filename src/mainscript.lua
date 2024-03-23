@@ -302,6 +302,8 @@ local function onUnitHeal(e)
 		name = ""
 	}
 
+	if (params.target == nil or params.source == nil) then return end
+
 	if (UI.get("Formatting", "IgnoreBloodlust") and e.runeResisted == 0 and object.IsInCombat(avatar.GetId())) then return end
 
 	local stack
@@ -412,9 +414,7 @@ local function onUnitDamage(e)
 		name = ""
 	}
 
-	if (e.source == nil or e.target == nil) then
-		return
-	end
+	if (params.target == nil or params.source == nil) then return end
 
 	if (e.ability ~= nil) then
 		params.name = FromWS(e.ability)
@@ -424,18 +424,20 @@ local function onUnitDamage(e)
 	local category = "any"
 
 	if (params.target == avatar.GetId()) then
-		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
+		if (params.source ~= nil and UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.source)) ~= "") then
 			params.name = FromWS(object.GetName(params.source))
 		end
 		if (UI.get("Formatting", "HideIncMisses") and (e.isMiss or e.isDodge)) then return end
 
 		-- We got damage from player
-		if (unit.IsPlayer(params.source)) then
-			category = "incP"
-			if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg"))) then return end
-		else -- We got damage from unit
-			category = "incU"
-			if (tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg"))) then return end
+		if (params.source ~= nil) then
+			if (unit.IsPlayer(params.source)) then
+				category = "incP"
+				if (tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinIncPlayerDmg"))) then return end
+			else -- We got damage from unit
+				category = "incU"
+				if (tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinIncUnitDmg"))) then return end
+			end
 		end
 
 		stack = "inc"
@@ -443,19 +445,21 @@ local function onUnitDamage(e)
 			stack = "out"
 		end
 	elseif (params.source ~= nil and (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source)))) then
-		if (UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
+		if (params.target ~= nil and UI.get("Formatting", "ReplaceByName") and FromWS(object.GetName(params.target)) ~= "") then
 			params.name =
 				FromWS(object.GetName(params.target))
 		end
 		if (UI.get("Formatting", "HideOutMisses") and (e.isMiss or e.isDodge)) then return end
 
 		-- We did damage to player
-		if (unit.IsPlayer(params.target)) then
-			category = "outP"
-			if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg"))) then return end
-		else -- We did damage to unit
-			category = "outU"
-			if (tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg"))) then return end
+		if (params.target ~= nil) then
+			if (unit.IsPlayer(params.target)) then
+				category = "outP"
+				if (tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg")) and params.amount < tonumber(UI.get("DamageFilteringP", "MinOutPlayerDmg"))) then return end
+			else -- We did damage to unit
+				category = "outU"
+				if (tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg")) and params.amount < tonumber(UI.get("DamageFilteringU", "MinOutUnitDmg"))) then return end
+			end
 		end
 
 		stack = "out"
@@ -514,9 +518,6 @@ local function onUnitDamage(e)
 			params.icon = GetGroupTexture("RELATED_TEXTURES", "FALL")
 			params.name = GetLocaleText("DMG_FALL")
 		end
-		if (e.isExploit) then pushToChatSimple("DamageFromExploit") end
-
-		-- pushToChatSimple(e.damageSource)
 
 		if (e.damageSource) then
 			if (e.damageSource == "DamageSource_BARRIER") then
