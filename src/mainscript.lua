@@ -950,6 +950,8 @@ local function setupUI()
 end
 
 function Init()
+	-- CHECKS
+
 	LANG = common.GetLocalization() or "rus"
 	UI.init("ShowCustomDD")
 
@@ -974,7 +976,7 @@ function Init()
 	setupUI()
 	setUpTemplates()
 	local damageVis = common.GetAddonMainForm("ContextDamageVisualization")
-	if (damageVis ~= nil) then
+	if (damageVis ~= nil and type(damageVis) == "userdata") then
 		damageVis:Show(false)
 	end
 end
