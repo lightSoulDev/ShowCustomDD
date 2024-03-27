@@ -372,15 +372,20 @@ local function onUnitHeal(e)
 			end
 		end
 
+		local searchName = params.realName
+		if (e.ability ~= nil) then
+			searchName = FromWS(e.ability)
+		end
+
 		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
+			local item = UI.getItem("ShowOnlyNames", searchName)
 			if (not item or not item.enabled) then
 				return
 			else
 				if (not item[category]) then return end
 			end
 		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
+			local item = UI.getItem("IgnoredNames", searchName)
 			if (item and item.enabled and item[category]) then return end
 		end
 
@@ -402,8 +407,6 @@ local function onUnitHeal(e)
 end
 
 local function onUnitDamage(e)
-	-- pushToChatSimple("onUnitDamage: "..FromWS(e.ability).." - ("..FromWS(object.GetName(e.target))..") from ("..FromWS(object.GetName(e.source))..") = "..(tostring(e.amount)) )
-
 	local params = {
 		source = e.source,
 		target = e.target,
@@ -415,6 +418,7 @@ local function onUnitDamage(e)
 	}
 
 	if (params.target == nil or params.source == nil) then return end
+	if (not object.IsExist(params.target) or not object.IsExist(params.source)) then return end
 
 	if (e.ability ~= nil) then
 		params.name = FromWS(e.ability)
