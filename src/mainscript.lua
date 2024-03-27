@@ -303,6 +303,7 @@ local function onUnitHeal(e)
 	}
 
 	if (params.target == nil or params.source == nil) then return end
+	if (not object.IsExist(params.target) or not object.IsExist(params.source)) then return end
 
 	if (UI.get("Formatting", "IgnoreBloodlust") and e.runeResisted == 0 and object.IsInCombat(avatar.GetId())) then return end
 
