@@ -146,15 +146,20 @@ function onUnitHeal(e)
 
 		params.realName = params.name
 
+		local searchName = params.realName
+		if (e.ability ~= nil) then
+			searchName = FromWS(e.ability)
+		end
+
 		if (UI.get("ShowOnlyNames", "ShowOnly") and not (UI.get("ShowOnlyNames", "ShowOnlyInc") and stack == "inc")) then
-			local item = UI.getItem("ShowOnlyNames", FromWS(e.ability))
+			local item = UI.getItem("ShowOnlyNames", searchName)
 			if (not item or not item.enabled) then
 				return
 			else
 				if (not item[category]) then return end
 			end
 		elseif (UI.get("IgnoredNames", "EnableIgnore")) then
-			local item = UI.getItem("IgnoredNames", FromWS(e.ability))
+			local item = UI.getItem("IgnoredNames", searchName)
 			if (item and item.enabled and item[category]) then return end
 		end
 
@@ -183,19 +188,17 @@ function onUnitDamage(e)
 	if (params.target == nil or params.source == nil) then return end
 
 	if (params.target == avatar.GetId()) then
-		-- ��� ������ �����
 		if (unit.IsPlayer(params.source)) then
 			category = "incP"
-		else -- ��� ������ ���
+		else
 			category = "incU"
 		end
 
 		stack = "inc"
 	elseif (params.source == avatar.GetId() or (unit.IsPet(params.source) and avatar.GetId() == unit.GetPetOwner(params.source))) then
-		-- ������� �� ������
 		if (unit.IsPlayer(params.target)) then
 			category = "outP"
-		else -- ������� �� ������
+		else
 			category = "outU"
 		end
 
